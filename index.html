@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Marine Safety Operations OS is an AI-powered simulation platform for marine inspection, compliance, and asset management.">
-    <title>Marine Safety Operations OS - AI-Powered Platform</title>
+    <meta name="description" content="FireSafe OS is an AI-powered safety inspection, certification, and compliance platform.">
+    <title>FireSafe OS - Safety Compliance & Inspection Platform</title>
     <!-- Custom styling -->
     <link rel="stylesheet" href="style.css">
     <!-- Lucide Icons CDN -->
@@ -18,12 +18,12 @@
         <aside class="sidebar">
             <div class="sidebar-top">
                 <div class="brand-section">
-                    <div class="brand-logo">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <div class="brand-logo" style="background: radial-gradient(circle, #f59e0b 0%, #ef4444 100%);">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
                     </div>
                     <div class="brand-info">
-                        <span class="brand-name">MarineSafety OS</span>
-                        <span class="brand-subtitle">AI Operations</span>
+                        <span class="brand-name">FireSafe OS</span>
+                        <span class="brand-subtitle">AI Compliance</span>
                     </div>
                 </div>
 
@@ -31,43 +31,47 @@
                     <ul class="nav-menu">
                         <li class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">
                             <i data-lucide="layout-dashboard"></i>
-                            <span>Dashboard</span>
+                            <span>Executive Dashboard</span>
                         </li>
                         <li class="nav-item" id="nav-inspection" onclick="switchTab('inspection')">
-                            <i data-lucide="shield-check"></i>
-                            <span>AI Inspection</span>
+                            <i data-lucide="clipboard-check"></i>
+                            <span>Smart Inspection</span>
                         </li>
                         <li class="nav-item" id="nav-reports" onclick="switchTab('reports')">
-                            <i data-lucide="file-text"></i>
+                            <i data-lucide="file-badge"></i>
                             <span>Reports & Certs</span>
                         </li>
                         <li class="nav-item" id="nav-assets" onclick="switchTab('assets')">
-                            <i data-lucide="anchor"></i>
+                            <i data-lucide="shield-check"></i>
                             <span>Asset Registry</span>
                         </li>
+                        <li class="nav-item" id="nav-amc" onclick="switchTab('amc')">
+                            <i data-lucide="calendar-range"></i>
+                            <span>AMC Contracts</span>
+                        </li>
                         <li class="nav-item" id="nav-chat" onclick="switchTab('chat')">
-                            <i data-lucide="message-square-code"></i>
+                            <i data-lucide="bot"></i>
                             <span>Compliance AI</span>
                         </li>
                         <li class="nav-item" id="nav-customer" onclick="switchTab('customer')">
-                            <i data-lucide="user-check"></i>
+                            <i data-lucide="users"></i>
                             <span>Customer Portal</span>
                         </li>
-                        <!-- Advanced Additions -->
+                        <!-- Advanced Operations -->
                         <li class="nav-item" id="nav-telemetry" onclick="switchTab('telemetry')">
-                            <i data-lucide="activity"></i>
+                            <i data-lucide="radio"></i>
                             <span>IoT Telemetry</span>
                         </li>
                         <li class="nav-item" id="nav-dispatch" onclick="switchTab('dispatch')">
-                            <i data-lucide="map"></i>
+                            <i data-lucide="route"></i>
                             <span>Dispatch Map</span>
                         </li>
                         <li class="nav-item" id="nav-cctv" onclick="switchTab('cctv')">
-                            <i data-lucide="video"></i>
+                            <i data-lucide="eye"></i>
                             <span>CCTV Monitoring</span>
                         </li>
                         <li class="nav-item" id="nav-analytics" onclick="switchTab('analytics')">
-                            <i data-lucide="trending-up"></i>
+                            <i data-lucide="line-chart"></i>
                             <span>Predictive Health</span>
                         </li>
                     </ul>
@@ -79,7 +83,7 @@
                     <div class="profile-img">ST</div>
                     <div class="profile-details">
                         <span class="profile-name">Sujal Technician</span>
-                        <span class="profile-role">Lead Marine Surveyor</span>
+                        <span class="profile-role">Senior Auditor</span>
                     </div>
                 </div>
             </div>
@@ -91,12 +95,12 @@
             <!-- Top Header -->
             <header class="top-header">
                 <div class="header-title-area">
-                    <h2 id="current-view-title">Dashboard Overview</h2>
+                    <h2 id="current-view-title">Executive Dashboard</h2>
                 </div>
                 <div class="header-actions">
                     <div class="system-status">
-                        <div class="pulse-dot"></div>
-                        <span>AI Engine Online</span>
+                        <div class="pulse-dot" style="background: var(--color-pass); box-shadow: 0 0 10px var(--color-pass);"></div>
+                        <span>Safety Engine Sync</span>
                     </div>
                     <!-- Theme Mode Toggle -->
                     <button class="icon-btn" onclick="toggleThemeMode()" id="theme-toggle-btn" title="Toggle Light/Dark Theme">
@@ -116,14 +120,14 @@
                 <section class="sim-controls-panel" id="simulation-panel">
                     <div class="panel-header" style="margin-bottom: 8px;">
                         <span class="panel-title" style="font-size: 1.05rem;">
-                            <i data-lucide="play-circle"></i>
-                            MVP Simulation Scenario: Fire Extinguisher Inspection
+                            <i data-lucide="play"></i>
+                            MVP Walkthrough: Customer Fire Extinguisher Inspection
                         </span>
-                        <span class="badge-pending" style="font-size: 0.75rem; padding: 2px 8px;">Scenario Controller</span>
+                        <span class="badge-pending" style="font-size: 0.75rem; padding: 2px 8px;">Demo Scenario</span>
                     </div>
                     
                     <div class="sim-description-box" id="sim-step-description">
-                        Welcome to MarineSafety OS. This guided scenario walks you through an AI-assisted fire extinguisher inspection. Press <strong>Start Simulation</strong> to begin.
+                        Welcome to FireSafe OS. This walkthrough demonstrates site selection, scanning, AI image analysis, and compliance failure routing. Press <strong>Start Walkthrough</strong> to begin.
                     </div>
 
                     <div class="sim-actions">
@@ -132,11 +136,11 @@
                         <div class="sim-steps-progress">
                             <div class="sim-step-dot active" id="sim-dot-0" onclick="jumpToSimStep(0)">
                                 <div class="step-circle">1</div>
-                                <span class="step-label">Init</span>
+                                <span class="step-label">Start</span>
                             </div>
                             <div class="sim-step-dot" id="sim-dot-1" onclick="jumpToSimStep(1)">
                                 <div class="step-circle">2</div>
-                                <span class="step-label">QR Scan</span>
+                                <span class="step-label">Scan</span>
                             </div>
                             <div class="sim-step-dot" id="sim-dot-2" onclick="jumpToSimStep(2)">
                                 <div class="step-circle">3</div>
@@ -144,19 +148,19 @@
                             </div>
                             <div class="sim-step-dot" id="sim-dot-3" onclick="jumpToSimStep(3)">
                                 <div class="step-circle">4</div>
-                                <span class="step-label">AI Diagnostic</span>
+                                <span class="step-label">AI Audit</span>
                             </div>
                             <div class="sim-step-dot" id="sim-dot-4" onclick="jumpToSimStep(4)">
                                 <div class="step-circle">5</div>
-                                <span class="step-label">Evaluation</span>
+                                <span class="step-label">Verdict</span>
                             </div>
                             <div class="sim-step-dot" id="sim-dot-5" onclick="jumpToSimStep(5)">
                                 <div class="step-circle">6</div>
-                                <span class="step-label">Report & Client</span>
+                                <span class="step-label">Cert & Client</span>
                             </div>
                         </div>
 
-                        <button class="btn btn-primary" id="sim-next-btn" onclick="nextSimStep()">Start Simulation</button>
+                        <button class="btn btn-primary" id="sim-next-btn" onclick="nextSimStep()">Start Walkthrough</button>
                     </div>
                 </section>
 
@@ -166,89 +170,121 @@
                     <div class="metrics-grid">
                         <div class="metric-card">
                             <div class="metric-header">
-                                <span>TOTAL ASSETS MONITORED</span>
-                                <i data-lucide="anchor"></i>
+                                <span>TOTAL MONITORED ASSETS</span>
+                                <i data-lucide="shield"></i>
                             </div>
-                            <div class="metric-val" id="metric-total-assets">184</div>
+                            <div class="metric-val" id="metric-total-assets">1,240</div>
                             <div class="metric-status status-up">
                                 <i data-lucide="trending-up"></i>
-                                <span>+12 this month</span>
+                                <span>Across 3 Active Sites</span>
                             </div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-header">
-                                <span>INSPECTIONS PENDING</span>
-                                <i data-lucide="clipboard-list"></i>
+                                <span>ACTIVE AMC CONTRACTS</span>
+                                <i data-lucide="calendar"></i>
                             </div>
-                            <div class="metric-val" id="metric-pending-inspections">5</div>
-                            <div class="metric-status status-down">
-                                <i data-lucide="alert-circle"></i>
-                                <span>3 overdue (Urgent)</span>
-                            </div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <span>COMPLIANCE RATE</span>
-                                <i data-lucide="shield-check"></i>
-                            </div>
-                            <div class="metric-val" id="metric-compliance-rate">97.8%</div>
-                            <div class="metric-status status-up">
-                                <i data-lucide="trending-up"></i>
-                                <span>+1.2% variance</span>
-                            </div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <span>CERTIFICATIONS ACTIVE</span>
-                                <i data-lucide="award"></i>
-                            </div>
-                            <div class="metric-val" id="metric-active-certs">172</div>
+                            <div class="metric-val">18</div>
                             <div class="metric-status status-neutral">
                                 <i data-lucide="check-circle2"></i>
-                                <span>15 due next 30 days</span>
+                                <span>100% contract compliance</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span>FAILED INSPECTIONS</span>
+                                <i data-lucide="alert-octagon"></i>
+                            </div>
+                            <div class="metric-val" style="color: var(--color-fail);" id="metric-failed-count">4</div>
+                            <div class="metric-status status-down" style="color: var(--color-warn);">
+                                <i data-lucide="alert-triangle"></i>
+                                <span>Needs Service Dispatch</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span>CERTIFICATES EXPIRING</span>
+                                <i data-lucide="award"></i>
+                            </div>
+                            <div class="metric-val">8</div>
+                            <div class="metric-status status-neutral">
+                                <span>Within next 30 days</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Extra Metrics Row -->
+                    <div class="metrics-grid" style="margin-bottom: 24px;">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span>COMPLIANCE RATE SCORE</span>
+                                <i data-lucide="check-square"></i>
+                            </div>
+                            <div class="metric-val">96.5%</div>
+                            <div class="metric-status status-up">
+                                <i data-lucide="trending-up"></i>
+                                <span>+0.8% this month</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span>MONTHLY SERVICE REVENUE</span>
+                                <i data-lucide="banknote"></i>
+                            </div>
+                            <div class="metric-val">$24,500</div>
+                            <div class="metric-status status-up">
+                                <span>AMC service billing cycles</span>
+                            </div>
+                        </div>
+                        <div class="metric-card" style="grid-column: span 2;">
+                            <div class="metric-header">
+                                <span>OPEN SERVICE TICKETS</span>
+                                <i data-lucide="wrench"></i>
+                            </div>
+                            <div class="metric-val" style="color: var(--color-warn);">3</div>
+                            <div class="metric-status status-neutral">
+                                <span>2 scheduled, 1 pending dispatch</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Dashboard Columns -->
                     <div class="dashboard-grid">
-                        <!-- Left Main Panel -->
                         <div class="glass-panel">
                             <div class="panel-header">
                                 <span class="panel-title">
-                                    <i data-lucide="bar-chart-3"></i>
-                                    Operations Intelligence
+                                    <i data-lucide="activity"></i>
+                                    Safety Assets Status Breakdown
                                 </span>
-                                <span class="badge-passed">System Active</span>
+                                <span class="badge-passed">Operational</span>
                             </div>
-                            <div style="height: 220px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px dashed var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.1);">
-                                <div style="display: flex; gap: 20px; width: 85%; height: 120px; align-items: flex-end; justify-content: space-around;">
-                                    <div style="width: 40px; height: 90%; background: linear-gradient(0deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 4px; position: relative;">
-                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Fire Ext</span>
+                            <div style="height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px dashed var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.1);">
+                                <div style="display: flex; gap: 20px; width: 85%; height: 100px; align-items: flex-end; justify-content: space-around;">
+                                    <div style="width: 40px; height: 95%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
+                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Exting.</span>
                                     </div>
-                                    <div style="width: 40px; height: 75%; background: linear-gradient(0deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 4px; position: relative;">
-                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Liferaft</span>
+                                    <div style="width: 40px; height: 45%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
+                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Alarms</span>
                                     </div>
-                                    <div style="width: 40px; height: 50%; background: linear-gradient(0deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 4px; position: relative;">
-                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Lifeboats</span>
-                                    </div>
-                                    <div style="width: 40px; height: 85%; background: linear-gradient(0deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 4px; position: relative;">
-                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">SCBA</span>
-                                    </div>
-                                    <div style="width: 40px; height: 40%; background: linear-gradient(0deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 4px; position: relative;">
+                                    <div style="width: 40px; height: 35%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
                                         <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Gas Det</span>
                                     </div>
+                                    <div style="width: 40px; height: 60%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
+                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">SCBA</span>
+                                    </div>
+                                    <div style="width: 40px; height: 30%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
+                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Suppres.</span>
+                                    </div>
                                 </div>
-                                <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 35px;">Asset Volume Breakdown by Equipment Category</span>
+                                <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 35px;">Asset Distribution by Fire Category</span>
                             </div>
                         </div>
 
-                        <!-- Right Panel: Live System Feed -->
                         <div class="glass-panel">
                             <div class="panel-header">
                                 <span class="panel-title">
-                                    <i data-lucide="bell"></i>
-                                    Operations Feed
+                                    <i data-lucide="alert-circle"></i>
+                                    Smart Alerts & Audit Feed
                                 </span>
                             </div>
                             <div class="live-alerts-feed" id="dashboard-alerts-feed">
@@ -257,10 +293,10 @@
                                         <i data-lucide="alert-triangle"></i>
                                     </div>
                                     <div class="feed-details">
-                                        <span class="feed-text">Liferaft #LR-992 requires annual pressure verification.</span>
+                                        <span class="feed-text">Cylinder wall warning on SCBA #SC-908. Maintenance scheduled.</span>
                                         <div class="feed-meta">
                                             <span>2 hours ago</span>
-                                            <span>IMO Reg. 12</span>
+                                            <span>AMC Service</span>
                                         </div>
                                     </div>
                                 </div>
@@ -269,10 +305,10 @@
                                         <i data-lucide="check-circle2"></i>
                                     </div>
                                     <div class="feed-details">
-                                        <span class="feed-text">Compliance Certificate issued for Cargo Vessel "Atlantic Blue".</span>
+                                        <span class="feed-text">Compliance Certificate issued for Cargo Port Terminal 1.</span>
                                         <div class="feed-meta">
                                             <span>1 day ago</span>
-                                            <span>SOLAS III</span>
+                                            <span>NFPA 10</span>
                                         </div>
                                     </div>
                                 </div>
@@ -281,17 +317,36 @@
                     </div>
                 </div>
 
-                <!-- TAB: AI INSPECTION -->
+                <!-- TAB: SMART INSPECTION WORKFLOW -->
                 <div class="viewport-tab" id="tab-inspection">
                     <div class="inspection-grid">
                         
-                        <!-- Left Panel: QR Scanner & Asset Selection -->
+                        <!-- Left Panel: Customer Site & QR Code Verification -->
                         <div class="left-inspection-column">
+                            
+                            <!-- Customer Site Selector (Module 1 Step 1) -->
+                            <div class="glass-panel" id="site-selector-panel">
+                                <div class="panel-header" style="margin-bottom: 12px;">
+                                    <span class="panel-title">
+                                        <i data-lucide="building"></i>
+                                        1. Customer Site Selector
+                                    </span>
+                                </div>
+                                <div class="site-select-box">
+                                    <select class="site-select-dropdown" id="customer-site-select" onchange="changeCustomerSite(this.value)">
+                                        <option value="site-port">Terminal 1 - Cargo Port Facility</option>
+                                        <option value="site-hq">Corporate Headquarters - Office Tower A</option>
+                                        <option value="site-depot">Main Engine & Logistics Depot</option>
+                                    </select>
+                                </div>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">Selecting a site restricts asset matching to local inventories.</span>
+                            </div>
+
                             <div class="glass-panel">
                                 <div class="panel-header">
                                     <span class="panel-title">
-                                        <i data-lucide="scan-face"></i>
-                                        1. QR Code / Serial Verification
+                                        <i data-lucide="qr-code"></i>
+                                        2. QR Code / Serial Scanner
                                     </span>
                                 </div>
                                 
@@ -322,48 +377,11 @@
                                 <div class="panel-header">
                                     <span class="panel-title">
                                         <i data-lucide="box"></i>
-                                        2. Equipment Selector
+                                        3. Equipment Selector
                                     </span>
                                 </div>
-                                <div class="equipment-selector">
-                                    <div class="equipment-card selected" id="equip-fire-ext" onclick="selectEquipment('fire-ext')">
-                                        <div class="equipment-info">
-                                            <div class="equipment-icon-box">
-                                                <i data-lucide="flame"></i>
-                                            </div>
-                                            <div class="equipment-name-desc">
-                                                <span class="equipment-name">Portable CO2 Fire Extinguisher</span>
-                                                <span class="equipment-id">Asset ID: FE-102 &bull; Vessel: Oceanic Carrier</span>
-                                            </div>
-                                        </div>
-                                        <span class="equipment-status-badge badge-pending" id="equip-badge-fire-ext">Pending</span>
-                                    </div>
-
-                                    <div class="equipment-card" id="equip-liferaft" onclick="selectEquipment('liferaft')">
-                                        <div class="equipment-info">
-                                            <div class="equipment-icon-box">
-                                                <i data-lucide="life-buoy"></i>
-                                            </div>
-                                            <div class="equipment-name-desc">
-                                                <span class="equipment-name">15-Person Inflatable Liferaft</span>
-                                                <span class="equipment-id">Asset ID: LR-204 &bull; Vessel: Oceanic Carrier</span>
-                                            </div>
-                                        </div>
-                                        <span class="equipment-status-badge badge-passed">Passed</span>
-                                    </div>
-
-                                    <div class="equipment-card" id="equip-scba" onclick="selectEquipment('scba')">
-                                        <div class="equipment-info">
-                                            <div class="equipment-icon-box">
-                                                <i data-lucide="wind"></i>
-                                            </div>
-                                            <div class="equipment-name-desc">
-                                                <span class="equipment-name">Self-Contained Breathing Apparatus</span>
-                                                <span class="equipment-id">Asset ID: SC-908 &bull; Vessel: Oceanic Carrier</span>
-                                            </div>
-                                        </div>
-                                        <span class="equipment-status-badge badge-pending">Pending</span>
-                                    </div>
+                                <div class="equipment-selector" id="site-equipment-list">
+                                    <!-- Populated dynamically based on site -->
                                 </div>
                             </div>
                         </div>
@@ -374,7 +392,7 @@
                                 <div class="panel-header">
                                     <span class="panel-title">
                                         <i data-lucide="cpu"></i>
-                                        3. AI Inspection Assistant
+                                        4. AI Inspection Assistant
                                     </span>
                                     <button class="btn btn-primary" id="start-analysis-btn" onclick="startAiAnalysis()" disabled>Run AI Analysis</button>
                                 </div>
@@ -383,7 +401,7 @@
                                 <div class="ai-image-overlay-container" id="ai-photo-overlay-container">
                                     <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">
                                         <i data-lucide="image" style="width: 36px; height: 36px; stroke-width: 1.5; margin-bottom: 8px;"></i>
-                                        <div>AI Computer Vision Canvas Overlay</div>
+                                        <div>AI Computer Vision Bounding Box Canvas</div>
                                     </div>
                                 </div>
 
@@ -456,6 +474,7 @@
                                         </div>
                                     </div>
                                     
+                                    <!-- Dynamic Compliance Pass/Fail Verdict -->
                                     <div id="compliance-verdict-box" style="display: none; border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: auto; justify-content: space-between; align-items: center;">
                                         <div>
                                             <span style="display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">COMPLIANCE VERDICT</span>
@@ -470,10 +489,10 @@
                     </div>
                 </div>
 
-                <!-- TAB: AUTOMATED COMPLIANCE REPORT -->
+                <!-- TAB: AUTOMATED REPORTS & CERTIFICATES -->
                 <div class="viewport-tab" id="tab-reports">
                     <div class="glass-panel" style="background: transparent; border: none; box-shadow: none; padding: 0; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.9rem; color: var(--text-muted);">This document was generated automatically by the MarineSafety OS Compliance Engine.</span>
+                        <span style="font-size: 0.9rem; color: var(--text-muted);">Compliance documentation generated automatically from real-time audit data.</span>
                         <div style="display: flex; gap: 12px;">
                             <button class="btn btn-secondary" onclick="window.print()">
                                 <i data-lucide="printer"></i>
@@ -485,12 +504,12 @@
                     <div class="report-document-container" id="report-document-container">
                         <div class="report-header-sec">
                             <div class="report-logo-placeholder">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                <span class="report-logo-text">MarineSafety OS</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                                <span class="report-logo-text">FireSafe OS</span>
                             </div>
                             <div class="report-title-label">
-                                <h3>INSPECTION & COMPLIANCE CERTIFICATE</h3>
-                                <p>Document ID: CERT-2026-FE102 &bull; SOLAS Standard III/R20</p>
+                                <h3>COMPLIANCE & INSPECTION CERTIFICATE</h3>
+                                <p>Document ID: FS-CERT-2026-FE102 &bull; Standards Code: NFPA 10</p>
                             </div>
                         </div>
 
@@ -504,12 +523,12 @@
                                 <span id="report-asset-id">FE-102</span>
                             </div>
                             <div class="meta-field">
-                                <label>Vessel / Facility</label>
-                                <span>Oceanic Carrier (IMO: 9845322)</span>
+                                <label>Customer Facility</label>
+                                <span id="report-site-name">Terminal 1 - Cargo Port Facility</span>
                             </div>
                             <div class="meta-field">
-                                <label>Operator / Owner</label>
-                                <span>Atlantic Marine Fleet Ltd</span>
+                                <label>Contract Reference</label>
+                                <span>AMC-2026-PORT (Terminal 1)</span>
                             </div>
                             <div class="meta-field">
                                 <label>Inspection Date</label>
@@ -517,7 +536,7 @@
                             </div>
                             <div class="meta-field">
                                 <label>Lead Inspector</label>
-                                <span>Sujal Technician (Surveyor: SURVEY-904)</span>
+                                <span>Sujal Technician (ID: SURVEY-904)</span>
                             </div>
                         </div>
 
@@ -525,19 +544,24 @@
                         <table class="report-table">
                             <thead>
                                 <tr>
-                                    <th>Checkpoint</th>
+                                    <th>Safety Checkpoint</th>
                                     <th>Observations / AI Diagnosis</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody id="report-table-body">
-                                <tr>
-                                    <td>Pressure Gauge Verification</td>
-                                    <td>Pressure reading at 120 PSI. Within normal boundaries (110 - 150 PSI).</td>
-                                    <td><span class="badge-report-pass">PASS</span></td>
-                                </tr>
+                                <!-- Populated dynamically -->
                             </tbody>
                         </table>
+
+                        <div class="report-section-title">AI Maintenance Recommendations</div>
+                        <div class="recommendation-box critical-red" id="report-recommendation-box" style="display:none;">
+                            <i data-lucide="wrench" style="color:var(--color-fail); flex-shrink:0;"></i>
+                            <div>
+                                <strong style="font-size:0.85rem; color:#b91c1c; display:block; margin-bottom:4px;">PROACTIVE SERVICE REQUIRED</strong>
+                                <span style="font-size:0.8rem; color:#374151;" id="report-recommendation-text">Defects represent a regulatory failure. The pressure cylinder must be recharged, neck assembly cleaned, and safety tamper seal wire re-fitted immediately to re-authorize NFPA 10 safety compliance.</span>
+                            </div>
+                        </div>
 
                         <div class="report-section-title">Inspection Photo Evidence</div>
                         <div class="report-images-box" id="report-images-annex">
@@ -550,7 +574,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
                             <div>
                                 <h4 style="font-family:'Outfit'; font-size:1.1rem; color:#0f172a;" id="report-decision-title">COMPLIANCE DECISION: PASSED</h4>
-                                <p style="font-size:0.8rem; color:#64748b; margin-top: 4px;" id="report-decision-desc">The equipment complies with SOLAS and IMO standard requirements.</p>
+                                <p style="font-size:0.8rem; color:#64748b; margin-top: 4px;" id="report-decision-desc">The equipment complies with all local and international fire safety regulations.</p>
                             </div>
                             <span id="report-verdict-badge" class="badge-report-pass" style="font-size: 1.1rem; padding: 6px 14px;">PASS</span>
                         </div>
@@ -559,7 +583,7 @@
                             <div class="sign-box">
                                 <div class="signature-line" id="report-inspector-signature">Sujal Tech</div>
                                 <span style="font-size: 0.8rem; font-weight:700;">Surveyor Signature</span>
-                                <span style="font-size: 0.7rem; color:#64748b;">MarineSafety OS AI Verified</span>
+                                <span style="font-size: 0.7rem; color:#64748b;">FireSafe OS AI Verified</span>
                             </div>
                             <div class="sign-box">
                                 <div class="signature-line" style="font-family:serif; font-style:italic;" id="report-co-signature">SYSTEM STAMP</div>
@@ -570,13 +594,13 @@
                     </div>
                 </div>
 
-                <!-- TAB: ASSETS REGISTRY -->
+                <!-- TAB: SAFETY ASSET REGISTRY -->
                 <div class="viewport-tab" id="tab-assets">
                     <div class="glass-panel">
                         <div class="panel-header">
                             <span class="panel-title">
                                 <i data-lucide="database"></i>
-                                Fleet Safety Asset Registry
+                                Safety Asset Registry
                             </span>
                             <span class="badge-passed" id="registry-count-badge">Total Assets: 3</span>
                         </div>
@@ -584,12 +608,13 @@
                         <div class="search-filter-row">
                             <div class="search-input-box">
                                 <i data-lucide="search"></i>
-                                <input type="text" class="search-input" id="asset-search-input" placeholder="Search by Asset ID, Manufacturer, Model..." onkeyup="filterAssetsTable()">
+                                <input type="text" class="search-input" id="asset-search-input" placeholder="Search by Asset ID, Site, Manufacturer, Model..." onkeyup="filterAssetsTable()">
                             </div>
                             <select class="filter-select" id="asset-type-filter" onchange="filterAssetsTable()">
                                 <option value="all">All Equipment Types</option>
                                 <option value="Fire Extinguisher">Fire Extinguishers</option>
-                                <option value="Liferaft">Liferafts</option>
+                                <option value="Fire Alarm System">Fire Alarm Systems</option>
+                                <option value="Gas Detection System">Gas Detection Systems</option>
                                 <option value="SCBA">SCBA Equipment</option>
                             </select>
                         </div>
@@ -600,9 +625,9 @@
                                     <tr>
                                         <th>Asset ID</th>
                                         <th>Equipment Type</th>
+                                        <th>Facility Site</th>
                                         <th>Manufacturer</th>
                                         <th>Model Number</th>
-                                        <th>Installation Date</th>
                                         <th>Last Inspected</th>
                                         <th>Current Status</th>
                                     </tr>
@@ -615,15 +640,48 @@
                     </div>
                 </div>
 
-                <!-- TAB: COMPLIANCE INTELLIGENCE -->
+                <!-- TAB: AMC & SERVICE MANAGEMENT (New Tab!) -->
+                <div class="viewport-tab" id="tab-amc">
+                    <div class="glass-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">
+                                <i data-lucide="calendar-range"></i>
+                                Annual Maintenance Contracts (AMC) Ledger
+                            </span>
+                            <span class="badge-passed" id="amc-contracts-count">18 Active Contracts</span>
+                        </div>
+
+                        <div class="assets-table-container">
+                            <table class="assets-table">
+                                <thead>
+                                    <tr>
+                                        <th>Contract ID</th>
+                                        <th>Client Name</th>
+                                        <th>Facility Site Coverage</th>
+                                        <th>Monthly Value</th>
+                                        <th>Next Scheduled Service</th>
+                                        <th>Renewal Date</th>
+                                        <th>Lead Surveyor</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="amc-table-body">
+                                    <!-- Loaded dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: COMPLIANCE AI (Knowledge Assistant) -->
                 <div class="viewport-tab" id="tab-chat">
                     <div class="glass-panel" style="max-width: 900px; margin: 0 auto;">
                         <div class="panel-header">
                             <span class="panel-title">
                                 <i data-lucide="message-square"></i>
-                                Compliance Intelligence Assistant
+                                Compliance AI Knowledge Assistant
                             </span>
-                            <span class="badge-passed" style="font-size: 0.75rem;">SOLAS & IMO Core Knowledge Base</span>
+                            <span class="badge-passed" style="font-size: 0.75rem;">NFPA, OSHA, and SOP Knowledge Hub</span>
                         </div>
 
                         <div class="chat-container">
@@ -631,12 +689,13 @@
                                 <div class="chat-msg assistant">
                                     <div class="chat-avatar">AI</div>
                                     <div class="chat-bubble">
-                                        Hello! I am the **MarineSafety Compliance Intelligence Assistant**. I have complete access to:
-                                        - **SOLAS** Chapter III & Chapter II-2
-                                        - **IMO Regulations**
-                                        - Internal SOPs and Equipment Maintenance Manuals
+                                        Hello! I am the **FireSafe Compliance Assistant**. I have operational access to:
+                                        - **National Fire Protection Association (NFPA)** standards
+                                        - Customer AMC contracts and schedules
+                                        - Equipment Service Logs and timelines
+                                        - Inspection histories & fail reasons
                                         
-                                        How can I help verify your safety procedures or regulatory compliance today?
+                                        How can I assist you with your compliance audits or service schedules today?
                                     </div>
                                 </div>
                             </div>
@@ -644,15 +703,15 @@
                             <div style="margin-bottom: 14px;">
                                 <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 6px;">SUGGESTED ENQUIRIES</span>
                                 <div class="chat-suggestions">
-                                    <div class="suggestion-chip" onclick="askPresetQuestion('What is the required inspection interval for fire extinguishers?')">"Extinguisher inspection intervals?"</div>
-                                    <div class="suggestion-chip" onclick="askPresetQuestion('Which certificate is required for lifeboats?')">"Lifeboat certificates?"</div>
-                                    <div class="suggestion-chip" onclick="askPresetQuestion('Why did inspection FE-102 fail compliance?')">"Why did FE-102 fail?"</div>
-                                    <div class="suggestion-chip" onclick="askPresetQuestion('What regulations apply to vessel liferafts under SOLAS?')">"SOLAS Liferaft regulations"</div>
+                                    <div class="suggestion-chip" onclick="askPresetQuestion('What inspections are due this month?')">"What inspections are due this month?"</div>
+                                    <div class="suggestion-chip" onclick="askPresetQuestion('Why did asset FE-102 fail?')">"Why did asset FE-102 fail?"</div>
+                                    <div class="suggestion-chip" onclick="askPresetQuestion('Show previous service history for FE-102.')">"Show previous service history for FE-102."</div>
+                                    <div class="suggestion-chip" onclick="askPresetQuestion('Which assets have expired certificates?')">"Which assets have expired certificates?"</div>
                                 </div>
                             </div>
 
                             <div class="chat-input-box">
-                                <input type="text" class="chat-input" id="chat-user-input" placeholder="Ask a compliance or regulatory question...">
+                                <input type="text" class="chat-input" id="chat-user-input" placeholder="Ask a compliance, AMC, or history question...">
                                 <button class="btn btn-primary" style="padding: 6px 16px;" onclick="sendChatMessage()">
                                     <i data-lucide="send"></i>
                                 </button>
@@ -664,24 +723,24 @@
                 <!-- TAB: CUSTOMER PORTAL -->
                 <div class="viewport-tab" id="tab-customer">
                     <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 24px; background: rgba(20, 184, 166, 0.05); border: 1px solid var(--border-glow); padding: 16px; border-radius: var(--border-radius);">
-                        <div class="brand-logo" style="width: 50px; height: 50px; flex-shrink: 0; background: radial-gradient(circle, var(--primary) 0%, var(--secondary) 100%);">
-                            <i data-lucide="shield" style="stroke: #070a13; width: 26px; height: 26px;"></i>
+                        <div class="brand-logo" style="width: 50px; height: 50px; flex-shrink: 0; background: radial-gradient(circle, #f59e0b 0%, #ef4444 100%);">
+                            <i data-lucide="shield" style="stroke: #ffffff; width: 26px; height: 26px;"></i>
                         </div>
                         <div>
-                            <h3 style="font-family: 'Outfit'; font-size: 1.2rem;">Client Portal: Atlantic Marine Fleet</h3>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">Vessel: <strong>Oceanic Carrier</strong> (Status: 1 Warning Alert)</p>
+                            <h3 style="font-family: 'Outfit'; font-size: 1.2rem;">Client Portal: Terminal 1 Port Logistics</h3>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Active Coverage: <strong>Cargo Port Facility</strong> (Status: 1 Pending Service Action)</p>
                         </div>
                     </div>
 
                     <div class="metrics-grid" style="margin-bottom: 24px;">
                         <div class="metric-card" style="background: rgba(255,255,255,0.01);">
                             <div class="metric-header">
-                                <span>MY REGISTERED SAFETY ASSETS</span>
+                                <span>ONBOARD SAFETY ASSETS</span>
                                 <i data-lucide="box"></i>
                             </div>
-                            <div class="metric-val">3</div>
+                            <div class="metric-val" id="cust-total-assets">3</div>
                             <div class="metric-status status-neutral">
-                                <span>All onboard assets listed</span>
+                                <span>All local assets listed</span>
                             </div>
                         </div>
                         <div class="metric-card" style="background: rgba(255,255,255,0.01);">
@@ -691,17 +750,17 @@
                             </div>
                             <div class="metric-val" id="customer-active-certs">2</div>
                             <div class="metric-status status-up">
-                                <span>1 certificate pending renewal</span>
+                                <span>1 certificate suspended (Needs Service)</span>
                             </div>
                         </div>
                         <div class="metric-card" style="background: rgba(255,255,255,0.01);">
                             <div class="metric-header">
-                                <span>UPCOMING SERVICE RENEWALS</span>
+                                <span>NEXT CONTRACT SERVICE DATE</span>
                                 <i data-lucide="clock"></i>
                             </div>
-                            <div class="metric-val">1</div>
-                            <div class="metric-status status-down" id="customer-renewal-alert">
-                                <span>SC-908 due in 12 days</span>
+                            <div class="metric-val" style="font-size:1.4rem; padding-top:6px;">July 12, 2026</div>
+                            <div class="metric-status status-neutral">
+                                <span>Part of active AMC contract</span>
                             </div>
                         </div>
                     </div>
@@ -709,12 +768,12 @@
                     <div class="glass-panel">
                         <div class="panel-header">
                             <span class="panel-title">
-                                <i data-lucide="folder-heart"></i>
-                                Safety Certificates & Assets Inventory
+                                <i data-lucide="folder"></i>
+                                Safety Certificates & Local Assets Ledger
                             </span>
-                            <button class="btn btn-secondary btn-sm" onclick="showToast('Customer Portal', 'Downloading full PDF archive...', 'info')">
-                                <i data-lucide="download-cloud"></i>
-                                Download All Certs (ZIP)
+                            <button class="btn btn-secondary btn-sm" onclick="showToast('Customer Portal', 'Downloading full PDF certificate archive...', 'info')">
+                                <i data-lucide="download"></i>
+                                Download All Certificates
                             </button>
                         </div>
 
@@ -724,10 +783,10 @@
                                     <tr>
                                         <th>Asset ID</th>
                                         <th>Equipment Type</th>
-                                        <th>Location Onboard</th>
-                                        <th>Last Serviced</th>
-                                        <th>Expiry / Renewal</th>
-                                        <th>Certificate</th>
+                                        <th>Specific Location</th>
+                                        <th>Last Inspected</th>
+                                        <th>Expiry / Service</th>
+                                        <th>Active Certificate</th>
                                         <th>Status Verdict</th>
                                     </tr>
                                 </thead>
@@ -739,18 +798,15 @@
                     </div>
                 </div>
 
-                <!-- NEW TAB: IOT TELEMETRY -->
+                <!-- TAB: IOT LIVE TELEMETRY -->
                 <div class="viewport-tab" id="tab-telemetry">
                     <div class="telemetry-grid">
-                        
-                        <!-- Telemetry Card 1: SCBA cylinder -->
                         <div class="telemetry-card" id="telemetry-scba-card">
                             <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">SCBA Air Tank Pressure</span>
                             
                             <div class="circular-gauge-container">
                                 <svg class="circular-gauge-svg" width="140" height="140" viewBox="0 0 100 100">
                                     <circle class="gauge-track" cx="50" cy="50" r="40" stroke-width="8" />
-                                    <!-- 2 * PI * r = 251.2 -->
                                     <circle class="gauge-indicator" id="gauge-scba" cx="50" cy="50" r="40" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="37" />
                                 </svg>
                                 <div class="circular-gauge-value">
@@ -770,7 +826,6 @@
                             </div>
                         </div>
 
-                        <!-- Telemetry Card 2: Gas Detector -->
                         <div class="telemetry-card" id="telemetry-gas-card">
                             <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Gas Detector H2S Level</span>
                             
@@ -796,9 +851,8 @@
                             </div>
                         </div>
 
-                        <!-- Telemetry Card 3: Liferaft -->
                         <div class="telemetry-card" id="telemetry-liferaft-card">
-                            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Liferaft Tube Pressure</span>
+                            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Pressure Suppression System</span>
                             
                             <div class="circular-gauge-container">
                                 <svg class="circular-gauge-svg" width="140" height="140" viewBox="0 0 100 100">
@@ -811,7 +865,7 @@
                                 </div>
                             </div>
                             
-                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--color-pass);" id="telemetry-liferaft-status">Buoyancy Nominal</span>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--color-pass);" id="telemetry-liferaft-status">Pressure Nominal</span>
 
                             <div class="telemetry-control-row">
                                 <div class="telemetry-slider-label">
@@ -821,65 +875,45 @@
                                 <input type="range" class="telemetry-range-input" id="slider-liferaft" min="0.0" max="5.0" step="0.1" value="3.0" oninput="updateLiferaftTelemetry(this.value)">
                             </div>
                         </div>
-
                     </div>
                 </div>
 
-                <!-- NEW TAB: TECHNICIAN DISPATCH MAP -->
+                <!-- TAB: DISPATCH MAP -->
                 <div class="viewport-tab" id="tab-dispatch">
                     <div class="dispatch-container">
-                        <!-- Left Side: Interactive Deck SVG Map -->
                         <div class="glass-panel" style="padding: 20px;">
                             <div class="panel-header" style="margin-bottom: 12px;">
                                 <span class="panel-title">
                                     <i data-lucide="map"></i>
-                                    Oceanic Carrier Live Surveyor Track
+                                    Facility Map Surveyor Track
                                 </span>
-                                <span class="badge-passed" style="font-size: 0.75rem;">Interactive Deck Zones</span>
+                                <span class="badge-passed" style="font-size: 0.75rem;">Interactive Site Zones</span>
                             </div>
 
                             <div class="deck-map-wrapper">
                                 <svg class="deck-svg-map" viewBox="0 0 420 180" xmlns="http://www.w3.org/2000/svg">
-                                    <!-- Grid Helper lines -->
                                     <line x1="20" y1="90" x2="400" y2="90" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
-                                    
-                                    <!-- Vessel Hull Base Outline -->
                                     <path d="M20 90 L80 30 L350 30 L400 90 L350 150 L80 150 Z" fill="none" stroke="var(--text-muted)" stroke-width="2.5" opacity="0.4"/>
-                                    
-                                    <!-- Deck Zone 1: Bridge / Cockpit Cabin -->
-                                    <path id="zone-bridge" class="deck-zone" d="M80 60 L140 60 L140 120 L80 120 Z" onclick="clickDeckZone('Bridge')"/>
-                                    
-                                    <!-- Deck Zone 2: Cargo Holds Compartment -->
-                                    <path id="zone-cargo" class="deck-zone" d="M140 50 L280 50 L280 130 L140 130 Z" onclick="clickDeckZone('Cargo Deck')"/>
-                                    
-                                    <!-- Deck Zone 3: Aft Liferaft Rack -->
-                                    <path id="zone-aft" class="deck-zone" d="M280 60 L350 60 L380 90 L350 120 L280 120 Z" onclick="clickDeckZone('Aft Deck')"/>
-                                    
-                                    <!-- Deck Zone 4: Engine Room Bottom -->
-                                    <path id="zone-engine" class="deck-zone" d="M180 130 L260 130 L240 160 L160 160 Z" onclick="clickDeckZone('Engine Room')"/>
+                                    <path id="zone-bridge" class="deck-zone" d="M80 60 L140 60 L140 120 L80 120 Z" onclick="clickDeckZone('Control Room')"/>
+                                    <path id="zone-cargo" class="deck-zone" d="M140 50 L280 50 L280 130 L140 130 Z" onclick="clickDeckZone('Cargo Hold')"/>
+                                    <path id="zone-aft" class="deck-zone" d="M280 60 L350 60 L380 90 L350 120 L280 120 Z" onclick="clickDeckZone('Maintenance Yard')"/>
+                                    <path id="zone-engine" class="deck-zone" d="M180 130 L260 130 L240 160 L160 160 Z" onclick="clickDeckZone('Generator Room')"/>
 
-                                    <!-- Deck Labels -->
-                                    <text x="110" y="95" fill="var(--text-muted)" font-size="8" font-family="monospace" text-anchor="middle" pointer-events="none">BRIDGE</text>
-                                    <text x="210" y="95" fill="var(--text-muted)" font-size="8" font-family="monospace" text-anchor="middle" pointer-events="none">CARGO HOLD</text>
-                                    <text x="320" y="95" fill="var(--text-muted)" font-size="8" font-family="monospace" text-anchor="middle" pointer-events="none">AFT RACKS</text>
-                                    <text x="210" y="148" fill="var(--text-muted)" font-size="7" font-family="monospace" text-anchor="middle" pointer-events="none">ENGINE RM</text>
+                                    <text x="110" y="95" fill="var(--text-muted)" font-size="8" font-family="monospace" text-anchor="middle" pointer-events="none">CONTROL RM</text>
+                                    <text x="210" y="95" fill="var(--text-muted)" font-size="8" font-family="monospace" text-anchor="middle" pointer-events="none">CARGO DOCK</text>
+                                    <text x="320" y="95" fill="var(--text-muted)" font-size="8" font-family="monospace" text-anchor="middle" pointer-events="none">MAINT YARD</text>
+                                    <text x="210" y="148" fill="var(--text-muted)" font-size="7" font-family="monospace" text-anchor="middle" pointer-events="none">GEN ROOM</text>
 
-                                    <!-- Active Dispatch Path Line -->
                                     <path id="dispatch-route-path" class="tech-route-line" d="" />
 
-                                    <!-- Sujal Marker -->
                                     <g id="marker-sujal" class="tech-marker" transform="translate(100,80)" onclick="selectMapTechnician('sujal')">
                                         <circle r="7" class="tech-marker-circle" />
                                         <text class="tech-marker-label" y="2.5">ST</text>
                                     </g>
-                                    
-                                    <!-- David Marker -->
                                     <g id="marker-david" class="tech-marker" transform="translate(200,80)" onclick="selectMapTechnician('david')">
                                         <circle r="7" class="tech-marker-circle" style="fill: var(--secondary);" />
                                         <text class="tech-marker-label" y="2.5">DS</text>
                                     </g>
-
-                                    <!-- Emma Marker -->
                                     <g id="marker-emma" class="tech-marker" transform="translate(320,80)" onclick="selectMapTechnician('emma')">
                                         <circle r="7" class="tech-marker-circle" style="fill: var(--color-warn);" />
                                         <text class="tech-marker-label" y="2.5">EI</text>
@@ -888,7 +922,6 @@
                             </div>
                         </div>
 
-                        <!-- Right Side: Technician Cards -->
                         <div class="right-dispatch-column" style="display: flex; flex-direction: column;">
                             <div class="glass-panel" style="flex-grow: 1;">
                                 <div class="panel-header" style="margin-bottom: 16px;">
@@ -901,7 +934,7 @@
                                         <span class="equipment-status-badge badge-passed" style="font-size: 0.65rem;">Active</span>
                                     </div>
                                     <div style="font-size: 0.75rem; color: var(--text-muted);">
-                                        <span>Current Location: <strong>Bridge Starboard</strong></span><br>
+                                        <span>Current Location: <strong>Control Room</strong></span><br>
                                         <span>Task: <strong>FE-102 Extinguisher Audit</strong></span>
                                     </div>
                                 </div>
@@ -923,8 +956,8 @@
                                         <span class="equipment-status-badge badge-pending" style="font-size: 0.65rem;">Transit</span>
                                     </div>
                                     <div style="font-size: 0.75rem; color: var(--text-muted);">
-                                        <span>Current Location: <strong>Aft Deck</strong></span><br>
-                                        <span>Task: <strong>Buoyancy Release Check</strong></span>
+                                        <span>Current Location: <strong>Maintenance Yard</strong></span><br>
+                                        <span>Task: <strong>buoyancy checks</strong></span>
                                     </div>
                                 </div>
                             </div>
@@ -932,11 +965,9 @@
                     </div>
                 </div>
 
-                <!-- NEW TAB: CCTV MONITORING -->
+                <!-- TAB: CCTV MONITORING -->
                 <div class="viewport-tab" id="tab-cctv">
                     <div class="dashboard-grid">
-                        
-                        <!-- Left Side: Live Feed Canvas -->
                         <div class="left-cctv-feed">
                             <div class="cctv-frame-container">
                                 <canvas id="cctv-canvas" class="cctv-canvas" width="640" height="360"></canvas>
@@ -948,7 +979,6 @@
                             </div>
                         </div>
 
-                        <!-- Right Side: AI Analytics Logs -->
                         <div class="right-cctv-logs">
                             <div class="glass-panel" style="height: 100%; display: flex; flex-direction: column;">
                                 <div class="panel-header" style="margin-bottom: 12px;">
@@ -959,7 +989,6 @@
                                 </div>
 
                                 <div class="cctv-warnings-list" id="cctv-warnings-log" style="flex-grow: 1; display: flex; flex-direction: column; gap: 8px;">
-                                    <!-- Dynamic warning lists from JavaScript -->
                                     <div class="feed-item" style="padding: 8px 0;">
                                         <div class="feed-icon pass" style="width:28px; height:28px;"><i data-lucide="check" style="width:14px;"></i></div>
                                         <div class="feed-details">
@@ -973,11 +1002,10 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
-                <!-- NEW TAB: PREDICTIVE HEALTH ANALYTICS -->
+                <!-- TAB: PREDICTIVE HEALTH ANALYTICS -->
                 <div class="viewport-tab" id="tab-analytics">
                     <div class="glass-panel">
                         <div class="panel-header">
@@ -991,7 +1019,6 @@
                         <div class="analytics-metric-summary">
                             <div>
                                 <h4 style="font-family:'Outfit'; margin-bottom: 12px;">SCBA-908 Air Valve Degradation Curve</h4>
-                                <!-- SVG Line Chart -->
                                 <div class="chart-svg-container">
                                     <svg viewBox="0 0 500 200" width="100%" height="100%">
                                         <defs>
@@ -1001,19 +1028,16 @@
                                             </linearGradient>
                                         </defs>
 
-                                        <!-- Grid Lines -->
                                         <line x1="40" y1="20" x2="480" y2="20" class="chart-grid-line" />
                                         <line x1="40" y1="60" x2="480" y2="60" class="chart-grid-line" />
                                         <line x1="40" y1="100" x2="480" y2="100" class="chart-grid-line" />
                                         <line x1="40" y1="140" x2="480" y2="140" class="chart-grid-line" />
                                         <line x1="40" y1="170" x2="480" y2="170" class="chart-grid-line" style="stroke: rgba(255,255,255,0.12)" />
 
-                                        <!-- Axis Labels -->
                                         <text x="15" y="24" fill="var(--text-muted)" font-size="8">100%</text>
                                         <text x="15" y="104" fill="var(--text-muted)" font-size="8">50%</text>
                                         <text x="15" y="174" fill="var(--text-muted)" font-size="8">0%</text>
 
-                                        <!-- Months Labels -->
                                         <text x="50" y="186" fill="var(--text-muted)" font-size="8">Jan</text>
                                         <text x="120" y="186" fill="var(--text-muted)" font-size="8">Mar</text>
                                         <text x="190" y="186" fill="var(--text-muted)" font-size="8">May</text>
@@ -1022,13 +1046,9 @@
                                         <text x="400" y="186" fill="var(--text-muted)" font-size="8">Nov</text>
                                         <text x="470" y="186" fill="var(--text-muted)" font-size="8">Dec (Forecast)</text>
 
-                                        <!-- Shaded Area Chart -->
                                         <polygon points="40,20 120,40 190,70 260,110 330,135 400,165 470,170 470,170 40,170" class="chart-area" />
-
-                                        <!-- Chart Line path -->
                                         <path d="M 40 20 L 120 40 L 190 70 L 260 110 L 330 135 L 400 165 L 470 170" class="chart-line" />
 
-                                        <!-- Value Nodes -->
                                         <circle cx="40" cy="20" r="4" class="chart-node" onclick="showChartValue(98)" />
                                         <circle cx="120" cy="40" r="4" class="chart-node" onclick="showChartValue(88)" />
                                         <circle cx="190" cy="70" r="4" class="chart-node" onclick="showChartValue(74)" />
@@ -1040,7 +1060,6 @@
                                 </div>
                             </div>
 
-                            <!-- Forecast details -->
                             <div style="display:flex; flex-direction:column; gap:16px; justify-content:center;">
                                 <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
                                     <span style="font-size:0.7rem; color:var(--text-muted); font-weight:600; display:block; text-transform:uppercase;">Model Forecast</span>

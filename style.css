@@ -1,5 +1,5 @@
 /* 
-   Marine Safety Operations OS - Style Sheet
+   FireSafe OS - Core Style Sheet
    Designed with premium dark glassmorphism, glowing micro-accents, and smooth interactive states.
    Supports Light Mode variables, AI overlays, IoT Telemetry dashboard, SVG maps, CCTV grids, and Predictive charts.
 */
@@ -2084,6 +2084,50 @@ body.light-mode .sim-description-box {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* FireSafe OS Specific Additions */
+.site-select-box {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.site-select-dropdown {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 10px 14px;
+    outline: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    width: 100%;
+    transition: var(--transition-fast);
+}
+body.light-mode .site-select-dropdown {
+    background: #ffffff;
+}
+
+.site-select-dropdown:focus {
+    border-color: var(--primary);
+}
+
+.recommendation-box {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid var(--color-warn);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.recommendation-box.critical-red {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: var(--color-fail);
 }
 
 /* Printing styles for compliance certificate */

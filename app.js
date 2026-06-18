@@ -1,63 +1,137 @@
-// Marine Safety Operations OS - Core Simulation Engine
+// FireSafe OS - Safety Compliance & Inspection Engine
 
-// 1. Initial State & Asset Database
+// 1. Initial Database Setup
+const sitesDatabase = {
+    'site-port': {
+        name: "Terminal 1 - Cargo Port Facility",
+        assets: ["FE-102", "SC-908"]
+    },
+    'site-hq': {
+        name: "Corporate Headquarters - Office Tower A",
+        assets: ["FA-301", "FE-108"]
+    },
+    'site-depot': {
+        name: "Main Engine & Logistics Depot",
+        assets: ["GD-402", "FS-504"]
+    }
+};
+
 const assetsDatabase = [
     {
         id: "FE-102",
         type: "Fire Extinguisher",
         name: "Portable CO2 Fire Extinguisher",
-        manufacturer: "Kidde Marine OS",
+        siteId: "site-port",
+        manufacturer: "Kidde Safety Co",
         model: "CO2-5kg-Premium",
         installDate: "2024-01-12",
         lastInspected: "2025-06-18",
         status: "Pending",
-        location: "Bridge Starboard Side",
+        location: "Bridge Cabin East",
         expiry: "2029-01-12",
         history: [
-            { date: "2024-01-12", title: "Asset Initial Installation", desc: "Certified and installed on Bridge Starboard.", type: "pass", marker: "check" },
+            { date: "2024-01-12", title: "Asset Initial Installation", desc: "Installed at Bridge Cabin East.", type: "pass", marker: "check" },
             { date: "2025-01-15", title: "Annual Service Checklist", desc: "Hydrostatic test completed successfully.", type: "pass", marker: "check" },
-            { date: "2025-06-18", title: "Scheduled Inspection", desc: "Inspection flagged pending for current voyage.", type: "warn", marker: "alert" }
-        ]
-    },
-    {
-        id: "LR-204",
-        type: "Liferaft",
-        name: "15-Person Inflatable Liferaft",
-        manufacturer: "RFD Toyo Marine",
-        model: "ISO-9650-Lifesaver",
-        installDate: "2023-09-04",
-        lastInspected: "2026-05-12",
-        status: "Passed",
-        location: "Aft Deck Rack A",
-        expiry: "2028-09-04",
-        history: [
-            { date: "2023-09-04", title: "Initial Safety Deployment", desc: "Deck mounting and secure strap test passed.", type: "pass", marker: "check" },
-            { date: "2024-09-10", title: "Annual Hydrostatic Release Test", desc: "HRU replaced and verified active.", type: "pass", marker: "check" },
-            { date: "2025-09-15", title: "Annual Recertification", desc: "Approved station inspection, buoyancy check normal.", type: "pass", marker: "check" },
-            { date: "2026-05-12", title: "Routine Survey Checklist", desc: "Visual inspection and lashings verified by technician.", type: "pass", marker: "check" }
+            { date: "2025-06-18", title: "Scheduled Inspection", desc: "Inspection flagged pending for current cycle.", type: "warn", marker: "alert" }
         ]
     },
     {
         id: "SC-908",
         type: "SCBA",
         name: "Self-Contained Breathing Apparatus",
-        manufacturer: "Draeger Marine Safety",
+        siteId: "site-port",
+        manufacturer: "Draeger Safety",
         model: "PSS-4000-Dual",
         installDate: "2024-11-20",
         lastInspected: "2025-12-02",
         status: "Pending",
-        location: "Engine Control Room Cabinet",
+        location: "Control Center Emergency Cabinet",
         expiry: "2029-11-20",
         history: [
             { date: "2024-11-20", title: "Asset Initial Installation", desc: "Air cylinder filled to 300 Bar and cabinet secured.", type: "pass", marker: "check" },
-            { date: "2025-12-02", title: "Annual Cylinder Certification", desc: "Hydrostatic test approved, valve seal renewed.", type: "pass", marker: "check" }
+            { date: "2025-12-02", title: "Annual Cylinder Certification", desc: "Valve seal renewed.", type: "pass", marker: "check" }
+        ]
+    },
+    {
+        id: "FA-301",
+        type: "Fire Alarm System",
+        name: "Main Fire Alarm Control Panel",
+        siteId: "site-hq",
+        manufacturer: "Honeywell Fire",
+        model: "NFS2-640-Intelligent",
+        installDate: "2023-05-10",
+        lastInspected: "2026-04-10",
+        status: "Passed",
+        location: "Ground Floor Security Room",
+        expiry: "2033-05-10",
+        history: [
+            { date: "2023-05-10", title: "Panel Commissioning", desc: "Main panel online, 4 loop lines active.", type: "pass", marker: "check" },
+            { date: "2026-04-10", title: "Bi-Annual Smoke Sensor Test", desc: "Tested all loop sensors, signal transmission normal.", type: "pass", marker: "check" }
+        ]
+    },
+    {
+        id: "FE-108",
+        type: "Fire Extinguisher",
+        name: "Dry Chemical Fire Extinguisher",
+        siteId: "site-hq",
+        manufacturer: "Amerex Safety",
+        model: "DryChem-10lb",
+        installDate: "2023-06-14",
+        lastInspected: "2026-05-10",
+        status: "Passed",
+        location: "Floor 4 Elevator Lobby",
+        expiry: "2029-06-14",
+        history: [
+            { date: "2023-06-14", title: "Asset Installation", desc: "Wall mounting bracket secured.", type: "pass", marker: "check" },
+            { date: "2026-05-10", title: "Visual Inspections Log", desc: "Gauge pressure verified normal.", type: "pass", marker: "check" }
+        ]
+    },
+    {
+        id: "GD-402",
+        type: "Gas Detection System",
+        name: "Hydrogen Sulfide Detector Loop",
+        siteId: "site-depot",
+        manufacturer: "Crowcon Gas detection",
+        model: "TXgard-IS-H2S",
+        installDate: "2024-03-24",
+        lastInspected: "2025-11-20",
+        status: "Passed",
+        location: "Battery Storage Room A",
+        expiry: "2028-03-24",
+        history: [
+            { date: "2024-03-24", title: "Sensor Commissioning", desc: "Calibrated to H2S alarm threshold 10 PPM.", type: "pass", marker: "check" },
+            { date: "2025-11-20", title: "Sensor Calibration Check", desc: "Passed span-gas drift verification.", type: "pass", marker: "check" }
+        ]
+    },
+    {
+        id: "FS-504",
+        type: "Fire Suppression System",
+        name: "FM200 Gas Suppression Bottle",
+        siteId: "site-depot",
+        manufacturer: "Fike Corporation",
+        model: "FM200-80L",
+        installDate: "2022-09-15",
+        lastInspected: "2025-09-10",
+        status: "Passed",
+        location: "Server Server Rack Zone",
+        expiry: "2032-09-15",
+        history: [
+            { date: "2022-09-15", title: "System Pressurization", desc: " Suppression cylinders loaded and armed.", type: "pass", marker: "check" },
+            { date: "2025-09-10", title: "Weight & Pressure Test", desc: "Gas weight normal, actuator cylinder checks OK.", type: "pass", marker: "check" }
         ]
     }
 ];
 
-// Current operational state
+const amcDatabase = [
+    { id: "AMC-2026-PORT", client: "Port Logistics Ltd", site: "Terminal 1 - Cargo Port Facility", value: "$2,500/mo", service: "2026-07-12", renewal: "2027-01-01", tech: "Sujal Technician", status: "Active" },
+    { id: "AMC-2026-HQ", client: "General Corporate Corp", site: "Corporate Headquarters - Office Tower A", value: "$5,200/mo", service: "2026-08-04", renewal: "2027-02-15", tech: "David Surveyor", status: "Active" },
+    { id: "AMC-2026-DEPOT", client: "Engine Transport Hub", site: "Main Engine & Logistics Depot", value: "$3,800/mo", service: "2026-06-28", renewal: "2026-12-20", tech: "Emma Inspector", status: "Active" }
+];
+
+// Current State Machine
 let appState = {
     currentTab: 'dashboard',
+    selectedSiteId: 'site-port',
     selectedEquipmentId: 'FE-102',
     scannedQrAssetId: null,
     selectedPhotos: [], // 'gauge', 'corrosion', 'seal'
@@ -65,52 +139,49 @@ let appState = {
     complianceVerdict: 'PENDING',
     activeNotifications: [],
     simulationStep: 0,
-    themeMode: 'dark', // dark, light
+    themeMode: 'dark',
     selectedTechnician: 'sujal',
     cctvSafetyBreach: false,
     toastCount: 0
 };
 
-// 2. Tab Navigation
+// 2. Tab Router
 function switchTab(tabId) {
     appState.currentTab = tabId;
     
-    // Toggle active tab buttons
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
     });
     const navItem = document.getElementById(`nav-${tabId}`);
     if (navItem) navItem.classList.add('active');
 
-    // Toggle active viewport panes
     document.querySelectorAll('.viewport-tab').forEach(tab => {
         tab.classList.remove('active-tab');
     });
     const activeTabPanel = document.getElementById(`tab-${tabId}`);
     if (activeTabPanel) activeTabPanel.classList.add('active-tab');
 
-    // Update Header title
     const headerTitles = {
-        'dashboard': 'Operations Control Center',
-        'inspection': 'AI Inspection Assistant',
-        'reports': 'Automated Compliance Certificates',
-        'assets': 'Fleet Safety Asset Registry',
-        'chat': 'Compliance Intelligence AI',
-        'customer': 'Customer Self-Service Portal',
-        'telemetry': 'IoT Live Sensors Telemetry',
-        'dispatch': 'Technician Dispatch Deck Map',
+        'dashboard': 'Executive Control Dashboard',
+        'inspection': 'Smart Inspection Workflow',
+        'reports': 'Automated Reports & Certificates',
+        'assets': 'Safety Asset Registry',
+        'amc': 'AMC & Service Management Ledger',
+        'chat': 'Compliance AI Knowledge Hub',
+        'customer': 'Customer Portal',
+        'telemetry': 'IoT Live Telemetry',
+        'dispatch': 'Technician Dispatch Map',
         'cctv': 'CCTV Safety Video Analytics',
         'analytics': 'Predictive Health Forecasting'
     };
     document.getElementById('current-view-title').innerText = headerTitles[tabId] || 'Overview';
 
-    // Trigger visual canvas refresh on CCTV switch
     if (tabId === 'cctv') {
         initCctvLoop();
     }
 }
 
-// 3. Light / Dark Mode Toggle
+// 3. Theme mode
 function toggleThemeMode() {
     const body = document.body;
     const themeBtn = document.getElementById('theme-toggle-btn');
@@ -119,17 +190,17 @@ function toggleThemeMode() {
         appState.themeMode = 'light';
         body.classList.add('light-mode');
         themeBtn.innerHTML = `<i data-lucide="moon"></i>`;
-        showToast("Theme Updated", "Switched to Light Contrast view.", "info");
+        showToast("Theme Switch", "High-contrast Light Theme applied.", "info");
     } else {
         appState.themeMode = 'dark';
         body.classList.remove('light-mode');
         themeBtn.innerHTML = `<i data-lucide="sun"></i>`;
-        showToast("Theme Updated", "Switched to Dark Console view.", "info");
+        showToast("Theme Switch", "Console Dark Theme applied.", "info");
     }
     lucide.createIcons();
 }
 
-// 4. Notification Toast System
+// 4. Toast Alerts
 function showToast(title, message, type = 'info') {
     const toastContainer = document.getElementById('toast-container-div');
     if (!toastContainer) return;
@@ -170,7 +241,7 @@ function pushToDashboardFeed(title, message, type) {
     const feed = document.getElementById('dashboard-alerts-feed');
     if (!feed) return;
 
-    if (feed.children.length >= 6) {
+    if (feed.children.length >= 5) {
         feed.removeChild(feed.lastElementChild);
     }
 
@@ -190,7 +261,7 @@ function pushToDashboardFeed(title, message, type) {
             <span class="feed-text"><strong>${title}</strong>: ${message}</span>
             <div class="feed-meta">
                 <span>Just Now</span>
-                <span>OS Engine</span>
+                <span>FireSafe OS</span>
             </div>
         </div>
     `;
@@ -206,104 +277,168 @@ function pushToDashboardFeed(title, message, type) {
 }
 
 function toggleNotificationsMenu() {
-    showToast("System Logs", "All background compliance monitoring metrics running normal.", "pass");
+    showToast("System Diagnostics", "Active sensor loops and CCTV safety threads are verified.", "pass");
 }
 
-// 5. Fleet Asset Registry
-function populateAssetsTable() {
-    const tableBody = document.getElementById('assets-table-body');
-    if (!tableBody) return;
+// 5. Site Selection & Equipment Filter
+function changeCustomerSite(siteId) {
+    appState.selectedSiteId = siteId;
+    appState.scannedQrAssetId = null; // Reset QR verification on site switch
+    
+    const site = sitesDatabase[siteId];
+    showToast("Site Selected", `Loaded local inventory for: ${site.name}`, "info");
 
-    tableBody.innerHTML = '';
-    assetsDatabase.forEach(asset => {
-        let statusBadge = 'badge-pending';
-        if (asset.status === 'Passed') statusBadge = 'badge-passed';
-        if (asset.status === 'Failed') statusBadge = 'badge-failed';
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td><strong style="color: var(--primary);">${asset.id}</strong></td>
-            <td>${asset.type}</td>
-            <td>${asset.manufacturer}</td>
-            <td>${asset.model}</td>
-            <td>${asset.installDate}</td>
-            <td>${asset.lastInspected}</td>
-            <td><span class="equipment-status-badge ${statusBadge}">${asset.status}</span></td>
-        `;
-        row.onclick = () => openAssetFlyout(asset.id);
-        tableBody.appendChild(row);
-    });
-
-    const customerTableBody = document.getElementById('customer-table-body');
-    if (customerTableBody) {
-        customerTableBody.innerHTML = '';
-        assetsDatabase.forEach(asset => {
-            let statusBadge = 'badge-passed';
-            let certText = `<a href="#" onclick="viewComplianceReport(); event.stopPropagation();" style="color: var(--primary); text-decoration: underline;">CERT-${asset.id}</a>`;
-            if (asset.status === 'Failed') {
-                statusBadge = 'badge-failed';
-                certText = `<span style="color: var(--color-fail); font-weight:600;">SUSPENDED</span>`;
-            } else if (asset.status === 'Pending') {
-                statusBadge = 'badge-pending';
-                certText = `<span style="color: var(--color-warn); font-weight:600;">INSPECTION REQ.</span>`;
-            }
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><strong>${asset.id}</strong></td>
-                <td>${asset.type}</td>
-                <td>${asset.location}</td>
-                <td>${asset.lastInspected}</td>
-                <td>${asset.expiry}</td>
-                <td>${certText}</td>
-                <td><span class="equipment-status-badge ${statusBadge}">${asset.status}</span></td>
-            `;
-            customerTableBody.appendChild(row);
-        });
+    populateSiteEquipmentList();
+    
+    // Automatically select the first asset of the new site
+    if (site.assets.length > 0) {
+        const firstAsset = assetsDatabase.find(a => a.id === site.assets[0]);
+        if (firstAsset) {
+            selectEquipment(firstAsset.type === 'Fire Extinguisher' ? 'fire-ext' : (firstAsset.type === 'SCBA' ? 'scba' : 'liferaft'));
+        }
     }
 
-    const totalCountBadge = document.getElementById('registry-count-badge');
-    if (totalCountBadge) {
-        totalCountBadge.innerText = `Total Assets: ${assetsDatabase.length}`;
+    // Advance simulator step 1 if site is changed during Guided Walkthrough
+    if (appState.simulationStep === 1) {
+        nextSimStep();
     }
 }
 
-function filterAssetsTable() {
-    const query = document.getElementById('asset-search-input').value.toLowerCase();
-    const typeFilter = document.getElementById('asset-type-filter').value;
-    const tableBody = document.getElementById('assets-table-body');
-    if (!tableBody) return;
+function populateSiteEquipmentList() {
+    const listContainer = document.getElementById('site-equipment-list');
+    if (!listContainer) return;
 
-    tableBody.innerHTML = '';
+    listContainer.innerHTML = '';
+    const siteAssets = sitesDatabase[appState.selectedSiteId].assets;
+
     assetsDatabase.forEach(asset => {
-        const matchesSearch = asset.id.toLowerCase().includes(query) || 
-                              asset.manufacturer.toLowerCase().includes(query) || 
-                              asset.model.toLowerCase().includes(query) || 
-                              asset.status.toLowerCase().includes(query);
-        const matchesType = typeFilter === 'all' || asset.type === typeFilter;
-
-        if (matchesSearch && matchesType) {
+        if (siteAssets.includes(asset.id)) {
             let statusBadge = 'badge-pending';
             if (asset.status === 'Passed') statusBadge = 'badge-passed';
             if (asset.status === 'Failed') statusBadge = 'badge-failed';
+
+            let iconName = 'flame';
+            let clickParam = 'fire-ext';
+            if (asset.type === 'SCBA') { iconName = 'wind'; clickParam = 'scba'; }
+            else if (asset.type === 'Fire Alarm System') { iconName = 'bell'; clickParam = 'liferaft'; }
+            else if (asset.type === 'Gas Detection System') { iconName = 'activity'; clickParam = 'liferaft'; }
+            else if (asset.type === 'Fire Suppression System') { iconName = 'container'; clickParam = 'liferaft'; }
+
+            const card = document.createElement('div');
+            card.className = `equipment-card ${appState.selectedEquipmentId === asset.id ? 'selected' : ''}`;
+            card.id = `equip-card-${asset.id}`;
+            card.innerHTML = `
+                <div class="equipment-info">
+                    <div class="equipment-icon-box">
+                        <i data-lucide="${iconName}"></i>
+                    </div>
+                    <div class="equipment-name-desc">
+                        <span class="equipment-name">${asset.name}</span>
+                        <span class="equipment-id">Asset ID: ${asset.id} &bull; ${asset.location}</span>
+                    </div>
+                </div>
+                <span class="equipment-status-badge ${statusBadge}" id="equip-badge-${asset.id}">${asset.status}</span>
+            `;
+            card.onclick = () => {
+                appState.selectedEquipmentId = asset.id;
+                document.querySelectorAll('.equipment-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                renderAiOverlayCanvas();
+                
+                // Toggle Run analysis button disable if switching
+                if (asset.id === 'FE-102') {
+                    document.getElementById('start-analysis-btn').disabled = appState.selectedPhotos.length === 0;
+                } else {
+                    document.getElementById('start-analysis-btn').disabled = true;
+                }
+            };
+            listContainer.appendChild(card);
+        }
+    });
+    lucide.createIcons();
+}
+
+// 6. Ledgers rendering
+function populateLedgers() {
+    // Assets Registry
+    const assetTable = document.getElementById('assets-table-body');
+    if (assetTable) {
+        assetTable.innerHTML = '';
+        assetsDatabase.forEach(asset => {
+            let statusBadge = 'badge-pending';
+            if (asset.status === 'Passed') statusBadge = 'badge-passed';
+            if (asset.status === 'Failed') statusBadge = 'badge-failed';
+
+            const siteName = sitesDatabase[asset.siteId].name;
 
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><strong style="color: var(--primary);">${asset.id}</strong></td>
                 <td>${asset.type}</td>
+                <td>${siteName}</td>
                 <td>${asset.manufacturer}</td>
                 <td>${asset.model}</td>
-                <td>${asset.installDate}</td>
                 <td>${asset.lastInspected}</td>
                 <td><span class="equipment-status-badge ${statusBadge}">${asset.status}</span></td>
             `;
             row.onclick = () => openAssetFlyout(asset.id);
-            tableBody.appendChild(row);
-        }
-    });
+            assetTable.appendChild(row);
+        });
+    }
+
+    // AMC Contracts Ledger
+    const amcTable = document.getElementById('amc-table-body');
+    if (amcTable) {
+        amcTable.innerHTML = '';
+        amcDatabase.forEach(c => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong style="color: var(--primary);">${c.id}</strong></td>
+                <td>${c.client}</td>
+                <td>${c.site}</td>
+                <td>${c.value}</td>
+                <td>${c.service}</td>
+                <td>${c.renewal}</td>
+                <td>${c.tech}</td>
+                <td><span class="equipment-status-badge badge-passed">${c.status}</span></td>
+            `;
+            amcTable.appendChild(row);
+        });
+    }
+
+    // Customer Portal
+    const customerTable = document.getElementById('customer-table-body');
+    if (customerTable) {
+        customerTable.innerHTML = '';
+        assetsDatabase.forEach(asset => {
+            if (asset.siteId === 'site-port') {
+                let statusBadge = 'badge-passed';
+                let certText = `<a href="#" onclick="viewComplianceReport(); event.stopPropagation();" style="color: var(--primary); text-decoration: underline;">FS-CERT-${asset.id}</a>`;
+                if (asset.status === 'Failed') {
+                    statusBadge = 'badge-failed';
+                    certText = `<span style="color: var(--color-fail); font-weight:600;">SUSPENDED</span>`;
+                } else if (asset.status === 'Pending') {
+                    statusBadge = 'badge-pending';
+                    certText = `<span style="color: var(--color-warn); font-weight:600;">INSPECTION REQ.</span>`;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${asset.id}</strong></td>
+                    <td>${asset.type}</td>
+                    <td>${asset.location}</td>
+                    <td>${asset.lastInspected}</td>
+                    <td>${asset.expiry}</td>
+                    <td>${certText}</td>
+                    <td><span class="equipment-status-badge ${statusBadge}">${asset.status}</span></td>
+                `;
+                customerTable.appendChild(row);
+            }
+        });
+    }
 }
 
-// 6. Timeline & Asset Flyout Drawer
+// 7. Timeline & Flyout Details
 function openAssetFlyout(assetId) {
     const asset = assetsDatabase.find(a => a.id === assetId);
     if (!asset) return;
@@ -341,90 +476,43 @@ function closeAssetFlyout() {
     document.getElementById('asset-flyout-panel').classList.remove('active');
 }
 
-// 7. QR Scanner Simulator
+// 8. QR scanner simulator
 function triggerQrScan() {
+    if (appState.selectedSiteId !== 'site-port') {
+        showToast("Scan Error", "FE-102 belongs to the Terminal 1 Site inventory. Select Terminal 1 Cargo Port first.", "warn");
+        return;
+    }
+
     const scanner = document.getElementById('scanner-box');
     const laser = document.getElementById('scanner-laser');
     const instructions = document.getElementById('scanner-instructions');
     
     if (appState.scannedQrAssetId) {
-        showToast("Scan Log", "Asset FE-102 identification already active.", "pass");
+        showToast("Scanner", "Extinguisher FE-102 serial code already synchronized.", "pass");
         return;
     }
 
     scanner.classList.add('scanning');
     laser.style.display = 'block';
-    instructions.innerText = "Analyzing Barcode/QR Code...";
+    instructions.innerText = "Scanning asset barcode QR...";
     
     setTimeout(() => {
         laser.style.display = 'none';
         scanner.classList.remove('scanning');
         appState.scannedQrAssetId = 'FE-102';
-        instructions.innerHTML = `<span style="color: var(--color-pass); font-weight:700;"><i data-lucide="check" style="display:inline-block; vertical-align:middle; width:14px;"></i> FE-102 VERIFIED ONBOARD</span>`;
-        showToast("QR Scan Success", "Extinguisher #FE-102 synchronized. Local checklist activated.", "pass");
+        instructions.innerHTML = `<span style="color: var(--color-pass); font-weight:700;"><i data-lucide="check" style="display:inline-block; vertical-align:middle; width:14px;"></i> FE-102 SYNCED ON SITE</span>`;
+        showToast("QR Verified", "Identified Kidde CO2 Fire Extinguisher (FE-102).", "pass");
         
         selectEquipment('fire-ext');
         
-        if (appState.simulationStep === 1) {
+        if (appState.simulationStep === 2) {
             nextSimStep();
         }
         lucide.createIcons();
     }, 1500);
 }
 
-function selectEquipment(equipType) {
-    document.querySelectorAll('.equipment-card').forEach(card => card.classList.remove('selected'));
-    
-    let assetId = '';
-    if (equipType === 'fire-ext') {
-        document.getElementById('equip-fire-ext').classList.add('selected');
-        assetId = 'FE-102';
-    } else if (equipType === 'liferaft') {
-        document.getElementById('equip-liferaft').classList.add('selected');
-        assetId = 'LR-204';
-    } else if (equipType === 'scba') {
-        document.getElementById('equip-scba').classList.add('selected');
-        assetId = 'SC-908';
-    }
-    appState.selectedEquipmentId = assetId;
-    
-    renderAiOverlayCanvas();
-
-    if (assetId !== 'FE-102') {
-        document.getElementById('start-analysis-btn').disabled = true;
-    } else {
-        document.getElementById('start-analysis-btn').disabled = appState.selectedPhotos.length === 0;
-    }
-}
-
-// 8. AI Bounding Box Rendering
-function togglePhotoSelection(photoType) {
-    if (appState.selectedEquipmentId !== 'FE-102') {
-        showToast("Selection Locked", "Mock images are configured for Extinguisher FE-102 only.", "warn");
-        return;
-    }
-
-    const card = document.getElementById(`photo-${photoType}`);
-    if (card.classList.contains('selected')) {
-        card.classList.remove('selected');
-        appState.selectedPhotos = appState.selectedPhotos.filter(p => p !== photoType);
-    } else {
-        card.classList.add('selected');
-        appState.selectedPhotos.push(photoType);
-    }
-
-    renderAiOverlayCanvas();
-
-    const btn = document.getElementById('start-analysis-btn');
-    btn.disabled = appState.selectedPhotos.length === 0;
-
-    if (appState.simulationStep === 2 && appState.selectedPhotos.includes('gauge') && appState.selectedPhotos.includes('corrosion') && appState.selectedPhotos.includes('seal')) {
-        setTimeout(() => {
-            nextSimStep();
-        }, 800);
-    }
-}
-
+// 9. AI Visual Bounding box rendering
 function renderAiOverlayCanvas() {
     const container = document.getElementById('ai-photo-overlay-container');
     if (!container) return;
@@ -444,24 +532,17 @@ function renderAiOverlayCanvas() {
 
     container.innerHTML = `
         <svg viewBox="0 0 320 180" style="width:100%; height:100%; fill:none; stroke-linecap:round; stroke-linejoin:round;">
-            <!-- Fire Extinguisher Body Cylinder -->
             <path d="M120 70 L180 70 L180 150 A30 30 0 0 1 120 150 Z" fill="#b91c1c" stroke="#f8fafc" stroke-width="2" />
-            <!-- Neck & Handle -->
             <path d="M140 70 L140 45 L130 45 A10 10 0 0 1 140 35 L170 35" stroke="#f8fafc" stroke-width="2"/>
             <path d="M150 45 L150 30" stroke="#f8fafc" stroke-width="3" />
-            <!-- Hose -->
             <path d="M150 45 Q190 50 190 120" stroke="#000" stroke-width="3.5" />
             
-            <!-- Visual highlight areas -->
             ${appState.selectedPhotos.includes('gauge') ? `<circle cx="80" cy="55" r="15" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="3,3" />` : ''}
             ${appState.selectedPhotos.includes('seal') ? `<circle cx="210" cy="40" r="15" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="3,3" />` : ''}
             ${appState.selectedPhotos.includes('corrosion') ? `<circle cx="150" cy="80" r="15" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="3,3" />` : ''}
-
-            <!-- Target points labels -->
             <circle cx="150" cy="50" r="3" fill="#f8fafc"/>
         </svg>
 
-        <!-- Dynamic Absolute Bounding Boxes -->
         ${(hasBeenAnalyzed && appState.selectedPhotos.includes('gauge')) ? `
             <div class="ai-bounding-box" style="top: 25px; left: 35px; width: 65px; height: 65px;">
                 <span class="ai-box-label">Low PSI [94%]</span>
@@ -524,7 +605,7 @@ function evaluateAiFindings() {
     if (appState.selectedPhotos.includes('gauge')) {
         appState.inspectionFindings.push({
             title: "Pressure Gauge Abnormality",
-            desc: "Gauge dial reading at 95 PSI (Standard range: 115 - 145 PSI). Low discharge capability.",
+            desc: "Gauge needle points below safe bounds (95 PSI detected). High risk of non-discharge.",
             severity: "danger",
             verdict: "fail"
         });
@@ -532,16 +613,16 @@ function evaluateAiFindings() {
     }
     if (appState.selectedPhotos.includes('corrosion')) {
         appState.inspectionFindings.push({
-            title: "Corrosion Detected",
-            desc: "Mild thread surface oxidation near handle neck. Cleaning recommended.",
+            title: "Corrosion Near Nozzle Neck",
+            desc: "Oxidation on outer metallic casing thread. Cylinder body structurally safe, but requires clean-up.",
             severity: "warning",
             verdict: "warn"
         });
     }
     if (appState.selectedPhotos.includes('seal')) {
         appState.inspectionFindings.push({
-            title: "Missing Safety Seal & Pin",
-            desc: "Safety wire lock is missing. Risk of accidental deployment.",
+            title: "Missing Safety Seal Pin",
+            desc: "Safety wire lock and plastic tamper seal is missing. Equipment is vulnerable to discharge.",
             severity: "danger",
             verdict: "fail"
         });
@@ -550,8 +631,8 @@ function evaluateAiFindings() {
 
     if (appState.inspectionFindings.length === 0) {
         appState.inspectionFindings.push({
-            title: "Equipment Clean Pass",
-            desc: "All visual checkpoints normal. Safety valves secured.",
+            title: "Inspection Passed",
+            desc: "All physical inspection parameters compliant. No leakages detected.",
             severity: "normal",
             verdict: "pass"
         });
@@ -582,54 +663,59 @@ function evaluateAiFindings() {
     verdictBox.style.display = 'flex';
     verdictText.innerText = appState.complianceVerdict;
     
+    // Update local database & sidebar badge
+    const feIndex = assetsDatabase.findIndex(a => a.id === 'FE-102');
+    
     if (appState.complianceVerdict === 'FAIL') {
         verdictText.style.color = 'var(--color-fail)';
-        document.getElementById('equip-badge-fire-ext').innerText = 'Failed';
-        document.getElementById('equip-badge-fire-ext').className = 'equipment-status-badge badge-failed';
+        document.getElementById('equip-badge-FE-102').innerText = 'Failed';
+        document.getElementById('equip-badge-FE-102').className = 'equipment-status-badge badge-failed';
         
-        const feIndex = assetsDatabase.findIndex(a => a.id === 'FE-102');
         assetsDatabase[feIndex].status = 'Failed';
         assetsDatabase[feIndex].lastInspected = '2026-06-18';
         assetsDatabase[feIndex].history.unshift({
             date: "2026-06-18",
             title: "AI Inspection Failed",
-            desc: "Safety seal missing & low pressure (95 PSI) flagged by AI model.",
+            desc: "Regulatory fail: safety seal missing & low pressure (95 PSI) flagged by AI model.",
             type: "fail",
             marker: "close"
         });
+        
+        // Increment dashboard failed counts
+        document.getElementById('metric-failed-count').innerText = 5;
     } else {
         verdictText.style.color = 'var(--color-pass)';
-        document.getElementById('equip-badge-fire-ext').innerText = 'Passed';
-        document.getElementById('equip-badge-fire-ext').className = 'equipment-status-badge badge-passed';
+        document.getElementById('equip-badge-FE-102').innerText = 'Passed';
+        document.getElementById('equip-badge-FE-102').className = 'equipment-status-badge badge-passed';
         
-        const feIndex = assetsDatabase.findIndex(a => a.id === 'FE-102');
         assetsDatabase[feIndex].status = 'Passed';
         assetsDatabase[feIndex].lastInspected = '2026-06-18';
         assetsDatabase[feIndex].history.unshift({
             date: "2026-06-18",
             title: "AI Inspection Passed",
-            desc: "Approved with full integrity. Ready for operation.",
+            desc: "Asset verified fully compliant with NFPA 10 parameters.",
             type: "pass",
             marker: "check"
         });
+        document.getElementById('metric-failed-count').innerText = 4;
     }
 
-    renderAiOverlayCanvas(); // Refresh to draw bounding boxes
-    populateAssetsTable();
+    renderAiOverlayCanvas(); // Refresh bounding boxes
+    populateLedgers();
     generateAutomatedReport();
 
     showToast(
-        `Audit Complete: FE-102`, 
-        `Audit processed. Result: ${appState.complianceVerdict} (Logged to SOLAS Ledger).`, 
+        `Audit Evaluated: FE-102`, 
+        `Compliance evaluation complete. Result: ${appState.complianceVerdict}. Dispatch ledger updated.`, 
         appState.complianceVerdict === 'FAIL' ? 'fail' : 'pass'
     );
 
-    if (appState.simulationStep === 3) {
+    if (appState.simulationStep === 4) {
         nextSimStep();
     }
 }
 
-// 9. Automated Report Builder
+// 10. Report Generator
 function generateAutomatedReport() {
     const asset = assetsDatabase.find(a => a.id === 'FE-102');
     if (!asset) return;
@@ -641,19 +727,25 @@ function generateAutomatedReport() {
     const badge = document.getElementById('report-verdict-badge');
     const decisionTitle = document.getElementById('report-decision-title');
     const decisionDesc = document.getElementById('report-decision-desc');
+    const recommendBox = document.getElementById('report-recommendation-box');
     
     if (asset.status === 'Failed') {
         badge.innerText = 'FAIL';
         badge.className = 'badge-report-fail';
-        decisionTitle.innerText = "COMPLIANCE DECISION: REGULATORY FAIL";
+        decisionTitle.innerText = "COMPLIANCE DECISION: REGULATORY FAILURE";
         decisionTitle.style.color = '#b91c1c';
-        decisionDesc.innerText = "Defects represent non-conformity to SOLAS Chapter II-2. Equipment must be service-flagged or replaced.";
+        decisionDesc.innerText = "Equipment does not satisfy NFPA 10 regulations. Proactive Service recommendation issued for immediate correction.";
+        
+        // Show service recommendations
+        recommendBox.style.display = 'flex';
     } else {
         badge.innerText = 'PASS';
         badge.className = 'badge-report-pass';
-        decisionTitle.innerText = "COMPLIANCE DECISION: PASSED & VALIDATED";
+        decisionTitle.innerText = "COMPLIANCE DECISION: PASSED & CERTIFIED";
         decisionTitle.style.color = '#047857';
-        decisionDesc.innerText = "All testing metrics satisfy SOLAS Standards. Vessel Fire Certificate extension approved.";
+        decisionDesc.innerText = "Equipment complies with all local and international fire safety regulations.";
+        
+        recommendBox.style.display = 'none';
     }
 
     const tbody = document.getElementById('report-table-body');
@@ -665,18 +757,18 @@ function generateAutomatedReport() {
 
     tbody.innerHTML += `
         <tr>
-            <td><strong>Pressure Gauge Verification</strong></td>
-            <td>${checkPressure ? 'Pressure gauge reading is 95 PSI. Insufficient charge (requires 110-150 PSI).' : 'Pressure gauge verified at 120 PSI. Within compliance standards.'}</td>
+            <td><strong>Cylinder Pressure Verification</strong></td>
+            <td>${checkPressure ? 'Pressure gauge needle points to 95 PSI. Below safe operating standards (110 - 150 PSI).' : 'Pressure verified at 120 PSI. Within compliance standards.'}</td>
             <td><span class="${checkPressure ? 'badge-report-fail' : 'badge-report-pass'}">${checkPressure ? 'FAIL' : 'PASS'}</span></td>
         </tr>
         <tr>
-            <td><strong>Surface Corrosion & Neck Integrity</strong></td>
-            <td>${checkCorrosion ? 'Mild surface rust detected around thread area. Cosmetic warning issued.' : 'No surface oxidation or valve thread breakdown detected.'}</td>
+            <td><strong>Nozzle Casing & Corrosion Check</strong></td>
+            <td>${checkCorrosion ? 'Cosmetic surface rust on outer thread. Cylinder structurally intact.' : 'No surface oxidation or valve thread breakdown detected.'}</td>
             <td><span class="${checkCorrosion ? 'badge-report-fail' : 'badge-report-pass'}">${checkCorrosion ? 'WARN' : 'PASS'}</span></td>
         </tr>
         <tr>
-            <td><strong>Safety Seal & Securing Pin</strong></td>
-            <td>${checkSeal ? 'Safety wire lock is missing. Valve is considered unsecured.' : 'Safety ring pin secured and lead tamper seal fully intact.'}</td>
+            <td><strong>Tamper Seal & Securing Ring Pin</strong></td>
+            <td>${checkSeal ? 'Safety ring pin wire tamper seal is missing or broken. Unsecured valve hazard.' : 'Safety safety ring pin secured and tamper seal fully intact.'}</td>
             <td><span class="${checkSeal ? 'badge-report-fail' : 'badge-report-pass'}">${checkSeal ? 'FAIL' : 'PASS'}</span></td>
         </tr>
     `;
@@ -706,11 +798,7 @@ function generateAutomatedReport() {
     lucide.createIcons();
 }
 
-function viewComplianceReport() {
-    switchTab('reports');
-}
-
-// 10. Compliance Chatbot
+// 11. Compliance AI chatbot
 function askPresetQuestion(questionText) {
     const input = document.getElementById('chat-user-input');
     input.value = questionText;
@@ -758,7 +846,7 @@ function appendChatMessage(text, sender) {
     history.appendChild(msg);
     history.scrollTop = history.scrollHeight;
     
-    if (appState.simulationStep === 4 && (text.toLowerCase().includes('fail') || text.toLowerCase().includes('fe-102'))) {
+    if (appState.simulationStep === 4 && (text.toLowerCase().includes('fail') || text.toLowerCase().includes('fe-102') || text.toLowerCase().includes('why did'))) {
         setTimeout(() => {
             nextSimStep();
         }, 1500);
@@ -768,34 +856,43 @@ function appendChatMessage(text, sender) {
 function formulateChatbotResponse(query) {
     const q = query.toLowerCase();
 
-    if (q.includes('interval') || q.includes('how often')) {
-        return `Under **SOLAS Chapter II-2 Regulation 14**, inspection intervals are:
-- **Crew Monthly**: Visual seals checks and pressure reviews.
-- **Annual Service**: Complete hydrostatic tests, weight, and valve certifications.
-- **5-Year Test**: Internal release valve pressure test.`;
-    }
-    
-    if (q.includes('lifeboat') || q.includes('raft')) {
-        return `Under **SOLAS Chapter III**:
-- **Liferafts**: Serviced every **12 months** at an approved station.
-- **Lifeboats**: Crew launching maneuvers performed every **3 months**.`;
+    if (q.includes('due this month') || q.includes('due') || q.includes('month')) {
+        return `Here are the active AMC inspection schedules due in **June 2026**:
+- **Asset FE-102 (CO2 Extinguisher)**: Routine monthly check (Terminal 1 Cargo Port Site). *Update: Evaluated as failed.*
+- **Asset SC-908 (SCBA Breathing Pack)**: Monthly cylinder level check (Terminal 1 Cargo Port Site). *Overdue.*
+- **Asset GD-402 (H2S Detector)**: Span gas span calibration check (Main Logistics Depot).`;
     }
 
-    if (q.includes('fe-102') || q.includes('fail')) {
-        return `Asset **FE-102 failed compliance** because:
-1. **Unsecured Valve**: Tamper lock wire/seal is missing (99% confidence).
-2. **Defect**: Valve pressure holds only **95 PSI** (under the 110 PSI threshold).
-3. **Rust**: Neck thread oxidation detected.
+    if (q.includes('why did') || q.includes('fail') || q.includes('fe-102')) {
+        return `Asset **FE-102 failed compliance** on June 18, 2026 because the AI Computer Vision engine verified:
+1. **Low Operating Pressure**: Dial needle read **95 PSI** (under the safe regulatory minimum of **110 PSI**).
+2. **Missing Tamper Seal**: Safety wire pin seal is broken or missing.
+3. **Rust Concern**: Minor neck thread corrosion observed.
 
-*Action*: Clean neck, recharge tank, replace tamper seal, and request Surveyor sign-off.`;
+*Maintenance Dispatch Order*: Technician is scheduled to recharge the CO2 cylinder, clean neck threads, and re-fit a certified wire seal.`;
     }
 
-    return `I apologize, I could not find a direct citation in the active database. For standard operations:
-*   Reference **SOLAS Chapter III** for LSA guidelines.
-*   Ask: *"Why did inspection FE-102 fail compliance?"* for details on our active scenario.`;
+    if (q.includes('history') || q.includes('previous')) {
+        return `Service History Log for **FE-102**:
+- **2024-01-12**: Initial commissioning and installation (Passed).
+- **2025-01-15**: Hydrostatic pressure test (Passed).
+- **2026-06-18**: Routine Service Check (Failed - low pressure & missing safety lock).`;
+    }
+
+    if (q.includes('expired') || q.includes('certificate')) {
+        return `The following assets have **Expired or Suspended Certificates**:
+- **FE-102**: Compliance Certificate suspended due to inspection failure today.
+- **SC-908 (SCBA)**: Monthly pressure gauge verification is overdue since June 12, 2026.`;
+    }
+
+    return `I am sorry, I couldn't locate that specific operational record. You can ask:
+*   *"What inspections are due this month?"*
+*   *"Why did asset FE-102 fail?"*
+*   *"Show previous service history for FE-102."*
+*   *"Which assets have expired certificates?"*`;
 }
 
-// 11. IoT Live Telemetry Simulator
+// 12. IoT Live Telemetry Slider Hooks
 function updateScbaTelemetry(val) {
     const valEl = document.getElementById('telemetry-scba-val');
     const labelEl = document.getElementById('slider-scba-label');
@@ -815,7 +912,7 @@ function updateScbaTelemetry(val) {
         status.style.color = "var(--color-fail)";
         card.classList.add('danger-alert');
         if (val % 20 === 0) {
-            showToast("SCBA Alert", `Air Cylinder pressure dropped below safety levels: ${val} Bar!`, "fail");
+            showToast("SCBA Alarm", `Air tank pressure below operating levels: ${val} Bar!`, "fail");
         }
     } else {
         status.innerText = "Normal Charge";
@@ -844,7 +941,7 @@ function updateGasTelemetry(val) {
         card.classList.add('danger-alert');
         indicator.style.stroke = "var(--color-fail)";
         if (val % 15 === 0) {
-            showToast("Gas Release Alarm", `Toxic H2S Leak detected: ${val} PPM! Evacuate Zone immediately.`, "fail");
+            showToast("H2S Leak Alert", `Toxic Hydrogen Sulfide leak: ${val} PPM! Evacuate Battery Room.`, "fail");
         }
     } else {
         status.innerText = "Safe atmosphere";
@@ -879,14 +976,14 @@ function updateLiferaftTelemetry(val) {
         card.classList.add('danger-alert');
         indicator.style.stroke = "var(--color-fail)";
     } else {
-        status.innerText = "Buoyancy Nominal";
+        status.innerText = "Pressure Nominal";
         status.style.color = "var(--color-pass)";
         card.classList.remove('danger-alert');
         indicator.style.stroke = "var(--primary)";
     }
 }
 
-// 12. Dispatch Map Surveyor Nodes
+// 13. Dispatch Map Surveyor Nodes
 function selectMapTechnician(techId) {
     appState.selectedTechnician = techId;
     
@@ -899,25 +996,25 @@ function selectMapTechnician(techId) {
         route.setAttribute('d', 'M 100 80 Q 150 120 200 80');
         route.style.display = 'block';
         route.style.stroke = 'var(--primary)';
-        showToast("Technician Focus", "Sujal Surveyor route: Bridge to Cargo Deck 2 active.", "info");
+        showToast("Crew Dispatch", "Sujal Surveyor route: Control Room to Cargo Dock active.", "info");
     } else if (techId === 'david') {
         route.setAttribute('d', 'M 200 80 Q 210 120 210 145');
         route.style.display = 'block';
         route.style.stroke = 'var(--secondary)';
-        showToast("Technician Focus", "David Surveyor route: Cargo to Engine Room ladder active.", "info");
+        showToast("Crew Dispatch", "David Surveyor route: Cargo Dock to Generator Room active.", "info");
     } else if (techId === 'emma') {
         route.setAttribute('d', 'M 320 80 Q 260 60 200 80');
         route.style.display = 'block';
         route.style.stroke = 'var(--color-warn)';
-        showToast("Technician Focus", "Emma Inspector route: Aft Deck transit to Cargo Deck active.", "info");
+        showToast("Crew Dispatch", "Emma Inspector route: Maintenance Yard to Cargo Dock active.", "info");
     }
 }
 
 function clickDeckZone(zoneName) {
-    showToast("Deck Sensors Sync", `Zone: ${zoneName} - All safety inventory online. Signal strength 98%.`, "pass");
+    showToast("Zone Sensor Sync", `Zone: ${zoneName} - All local suppression sensors connected.`, "pass");
 }
 
-// 13. CCTV PPE Monitoring Canvas Loop
+// 14. CCTV PPE Monitoring Canvas Loop
 let cctvCanvas = null;
 let cctvCtx = null;
 let cctvAnimationId = null;
@@ -1061,7 +1158,7 @@ function simulateCctvBreach() {
         lucide.createIcons();
     } else {
         appState.cctvSafetyBreach = true;
-        showToast("CRITICAL SAFETY BREACH", "CCTV AI detected worker entering Aft Hazard rack without securing safety harness!", "fail");
+        showToast("SAFETY BREACH WARNING", "Worker entered Aft boundary without securing safety harness!", "fail");
         
         const log = document.getElementById('cctv-warnings-log');
         const warningItem = document.createElement('div');
@@ -1070,7 +1167,7 @@ function simulateCctvBreach() {
         warningItem.innerHTML = `
             <div class="feed-icon fail" style="width:28px; height:28px;"><i data-lucide="shield-alert" style="width:14px;"></i></div>
             <div class="feed-details">
-                <span style="font-size:0.75rem; color: var(--color-fail);"><strong>Harness Breach</strong> on Aft Deck: Worker unsecured near boundary.</span>
+                <span style="font-size:0.75rem; color: var(--color-fail);"><strong>Unsecured Area</strong>: Aft Deck worker without safety harness.</span>
             </div>
         `;
         log.insertBefore(warningItem, log.firstChild);
@@ -1078,25 +1175,28 @@ function simulateCctvBreach() {
     }
 }
 
-// 14. Predictive Analytics Detail click
+// 15. Predictive Analytics & Proactive schedules
 function showChartValue(percentageVal) {
-    showToast("Telemetry Analysis", `Forecasted cylinder wall pressure integrity: ${percentageVal}%`, "info");
+    showToast("Model Analysis", `SCBA valve pressure wall rating: ${percentageVal}%`, "info");
 }
 
 function triggerProactiveService() {
-    showToast("Service Dispatch", "Proactive SCBA-908 micro-seal replacement order logged in dispatcher ledger.", "pass");
-    document.getElementById('forecast-date').innerText = "Servicing Scheduled";
+    showToast("Service Ticket", "Proactive repair ticket generated. Scheduled for next technician visit.", "pass");
+    document.getElementById('forecast-date').innerText = "Ticket Scheduled";
     document.getElementById('forecast-date').style.color = "var(--color-pass)";
 }
 
-// 15. Guided Scenario Steps Progress Control
+// 16. Redesigned Guided Simulator Scenario Engine
 const scenarioSteps = [
     {
         step: 0,
-        desc: "<strong>Step 1: Init Simulation</strong><br>We will simulate a technician performing a fire extinguisher inspection onboard the cargo vessel. The extinguisher has several flaws that the AI needs to detect. Click <strong>Start Scenario</strong> to scan the QR code.",
-        actionBtnText: "Start Scenario",
+        desc: "<strong>Step 1: Init Walkthrough</strong><br>We will walk through an AI-assisted fire extinguisher inspection. The extinguisher FE-102 contains defects that need to be audited and reported. Click <strong>Start Walkthrough</strong> to select the customer site.",
+        actionBtnText: "Start Walkthrough",
         setup: () => {
             switchTab('dashboard');
+            appState.selectedSiteId = 'site-port';
+            document.getElementById('customer-site-select').value = 'site-port';
+            
             appState.scannedQrAssetId = null;
             appState.selectedPhotos = [];
             appState.complianceVerdict = 'PENDING';
@@ -1106,7 +1206,8 @@ const scenarioSteps = [
             assetsDatabase[feIndex].lastInspected = '2025-06-18';
             assetsDatabase[feIndex].history = assetsDatabase[feIndex].history.filter(h => !h.title.includes("2026"));
             
-            populateAssetsTable();
+            populateLedgers();
+            populateSiteEquipmentList();
             
             const scannerBox = document.getElementById('scanner-box');
             scannerBox.classList.remove('scanning');
@@ -1131,11 +1232,23 @@ const scenarioSteps = [
     },
     {
         step: 1,
-        desc: "<strong>Step 2: Scan Equipment QR Code</strong><br>The technician arrives at the Bridge Starboard side and scans the QR code on Fire Extinguisher <strong>FE-102</strong> to sync records. Click the <strong>QR Code</strong> on the left page or click the action button to simulate QR identification.",
-        actionBtnText: "Auto Scan QR",
+        desc: "<strong>Step 2: Select Customer Site</strong><br>The surveyor arrives at the facility and selects the customer site from the selector box. Click the <strong>Site Selector</strong> or click the action button to confirm <strong>Terminal 1 - Cargo Port Facility</strong>.",
+        actionBtnText: "Confirm Site Selection",
         setup: () => {
             switchTab('inspection');
-            selectEquipment('fire-ext');
+            const panel = document.getElementById('site-selector-panel');
+            panel.style.boxShadow = "0 0 25px var(--primary-glow)";
+            setTimeout(() => { panel.style.boxShadow = "none"; }, 1500);
+        },
+        action: () => {
+            changeCustomerSite('site-port');
+        }
+    },
+    {
+        step: 2,
+        desc: "<strong>Step 3: Scan Equipment QR Code</strong><br>The surveyor locates the extinguisher <strong>FE-102</strong> and scans the QR code. Click the <strong>QR Code Box</strong> on the left page or click the action button to simulate scanning.",
+        actionBtnText: "Simulate QR Scan",
+        setup: () => {
             const container = document.getElementById('scanner-box');
             container.style.boxShadow = "0 0 25px var(--primary-glow)";
             setTimeout(() => { container.style.boxShadow = "none"; }, 1500);
@@ -1145,9 +1258,9 @@ const scenarioSteps = [
         }
     },
     {
-        step: 2,
-        desc: "<strong>Step 3: Capture & Select Inspection Photos</strong><br>The technician captures detailed photos of the extinguisher showing pressure gauge, body corrosion, and safety seal. Click the <strong>three photo cards</strong> in the center column to stage them for AI analysis.",
-        actionBtnText: "Select Photos",
+        step: 3,
+        desc: "<strong>Step 4: Select Inspection Photos</strong><br>The surveyor takes photos of the pressure dial, handle corrosion, and the missing pin loop. Click the <strong>three photo cards</strong> in the center column to prepare the AI diagnosis.",
+        actionBtnText: "Stage Photos",
         setup: () => {
             const photosGrid = document.querySelector('.photo-cards-grid');
             photosGrid.style.border = "1px solid var(--primary)";
@@ -1160,8 +1273,8 @@ const scenarioSteps = [
         }
     },
     {
-        step: 3,
-        desc: "<strong>Step 4: Execute AI Diagnostic Analysis</strong><br>Now, run the AI model to automatically examine the selected photographs. The neural network will locate structural anomalies. Click the <strong>Run AI Analysis</strong> button.",
+        step: 4,
+        desc: "<strong>Step 5: Run AI Diagnostics & Compliance Check</strong><br>Run the computer-vision model. The AI will draw bounding boxes over the low pressure gauge, rust threads, and missing pin. Click the <strong>Run AI Analysis</strong> button.",
         actionBtnText: "Run AI Analysis",
         setup: () => {
             const btn = document.getElementById('start-analysis-btn');
@@ -1173,36 +1286,22 @@ const scenarioSteps = [
         }
     },
     {
-        step: 4,
-        desc: "<strong>Step 5: Compliance Verification Result</strong><br>The compliance engine processes the AI diagnostic findings. Due to the missing tamper seal and drop in gauge pressure, the extinguisher receives a regulatory <strong>FAIL</strong>. Click the action button to check regulation details via <strong>Compliance AI Chat</strong>.",
-        actionBtnText: "Verify with AI Chat",
-        setup: () => {
-            const verdictText = document.getElementById('compliance-verdict-text');
-            verdictText.style.animation = "pulse 1s infinite";
-        },
-        action: () => {
-            switchTab('chat');
-            askPresetQuestion('Why did inspection FE-102 fail compliance?');
-        }
-    },
-    {
         step: 5,
-        desc: "<strong>Step 6: Report Generation & Customer Dispatch</strong><br>The system compiles the official certificate showing all details, photos, and compliance verdicts. Meanwhile, the client is automatically alerted via the Customer Portal. Click action button to review client status.",
-        actionBtnText: "Open Customer Portal",
+        desc: "<strong>Step 6: Generate Certificate & Update Portal</strong><br>The compliance engine fails the asset, issues proactive repair recommendations, and compiles the report. Click the action button to check the customer's portal warnings.",
+        actionBtnText: "Inspect Customer Portal",
         setup: () => {
             switchTab('reports');
-            showToast("Customer Portal", "Notification sent to Atlantic Marine Owner. New certificate available.", "pass");
+            showToast("Customer Portal", "Compliance warnings and repair recommendations dispatched to client portal.", "pass");
         },
         action: () => {
             switchTab('customer');
-            showToast("Client Portal Active", "Showing compliance inventory for Atlantic Marine Fleet.", "info");
             
             setTimeout(() => {
                 document.getElementById('sim-step-description').innerHTML = `
-                    <div style="color: var(--color-pass); font-weight:700;"><i data-lucide="award" style="display:inline-block; vertical-align:middle; width:18px;"></i> SCENARIO COMPLETE!</div>
-                    The simulation has demonstrated the end-to-end flow: QR scan, photo-assisted AI inspection, automated report build, and client notification. Press <strong>Restart</strong> to run again.
+                    <div style="color: var(--color-pass); font-weight:700;"><i data-lucide="check-square" style="display:inline-block; vertical-align:middle; width:18px;"></i> DEMO WALKTHROUGH COMPLETED!</div>
+                    You have demonstrated the full FireSafe OS lifecycle: Site selection, QR scan, AI bounding boxes, compliance failure recommendations, and customer portal updates.
                 `;
-                document.getElementById('sim-next-btn').innerText = "Restart Simulation";
+                document.getElementById('sim-next-btn').innerText = "Restart Walkthrough";
                 lucide.createIcons();
             }, 500);
         }
@@ -1260,14 +1359,15 @@ function updateSimulatorUi() {
     });
 }
 
-// 16. App Bootstrap
+// 17. App Bootstrap
 window.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     
-    populateAssetsTable();
-    generateAutomatedReport();
+    populateSiteEquipmentList();
+    populateLedgers();
     renderAiOverlayCanvas();
     
+    // Bind chat enter key
     const chatInput = document.getElementById('chat-user-input');
     if (chatInput) {
         chatInput.addEventListener('keypress', (e) => {
@@ -1284,6 +1384,6 @@ window.addEventListener('DOMContentLoaded', () => {
     selectMapTechnician('sujal');
 
     setTimeout(() => {
-        showToast("System Online", "MarineSafety OS AI models loaded. Telemetry active.", "pass");
+        showToast("System Synced", "FireSafe OS databases, active AMCs, and local site lists loaded.", "pass");
     }, 1000);
 });
