@@ -890,6 +890,18 @@ async function getApiKey() {
     return "";
 }
 
+function saveLocalApiKey(val) {
+    if (val.trim()) {
+        localStorage.setItem('groq_api_key', val.trim());
+        cachedApiKey = val.trim();
+        showToast("Settings", "API Key saved in browser storage.", "pass");
+    } else {
+        localStorage.removeItem('groq_api_key');
+        cachedApiKey = null;
+        showToast("Settings", "API Key cleared.", "info");
+    }
+}
+
 async function getGroqChatResponse(query, onChunk) {
     try {
         const apiKey = await getApiKey();
@@ -1861,6 +1873,13 @@ window.addEventListener('DOMContentLoaded', () => {
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendChatMessage();
         });
+    }
+
+    // Pre-populate Groq API key input if stored locally
+    const stored = localStorage.getItem('groq_api_key');
+    const apiKeyInput = document.getElementById('chat-api-key-input');
+    if (stored && apiKeyInput) {
+        apiKeyInput.value = stored;
     }
 
     // Initialize circular telemetry dial values on load
