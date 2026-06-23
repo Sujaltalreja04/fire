@@ -1575,12 +1575,13 @@ body.light-mode .chart-grid-line {
 
 /* Compliance Intelligence Chatbot style */
 .chat-container {
-    display: grid;
-    grid-template-rows: 1fr auto;
-    height: 400px;
+    display: flex;
+    flex-direction: column;
+    height: 520px;
 }
 
 .chat-history {
+    flex-grow: 1;
     overflow-y: auto;
     padding-right: 10px;
     display: flex;
@@ -1593,6 +1594,7 @@ body.light-mode .chart-grid-line {
     display: flex;
     gap: 12px;
     max-width: 80%;
+    align-items: flex-start;
 }
 
 .chat-msg.assistant {
@@ -1605,14 +1607,16 @@ body.light-mode .chart-grid-line {
 }
 
 .chat-avatar {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.8rem;
     font-weight: 700;
+    flex-shrink: 0;
+    align-self: flex-start;
 }
 
 .chat-msg.assistant .chat-avatar {
@@ -1627,6 +1631,28 @@ body.light-mode .chart-grid-line {
 }
 body.light-mode .chat-msg.user .chat-avatar {
     background: rgba(15, 23, 42, 0.1);
+}
+
+.chat-typing-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 12px;
+    padding: 2px 4px;
+}
+.chat-typing-dots span {
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: typingBlink 1.4s infinite both;
+}
+.chat-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.chat-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBlink {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
 }
 
 .chat-bubble {

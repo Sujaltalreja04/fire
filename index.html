@@ -258,25 +258,76 @@
                                 </span>
                                 <span class="badge-passed">Operational</span>
                             </div>
-                            <div style="height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px dashed var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.1);">
-                                <div style="display: flex; gap: 20px; width: 85%; height: 100px; align-items: flex-end; justify-content: space-around;">
-                                    <div style="width: 40px; height: 95%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
-                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Exting.</span>
-                                    </div>
-                                    <div style="width: 40px; height: 45%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
-                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Alarms</span>
-                                    </div>
-                                    <div style="width: 40px; height: 35%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
-                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Gas Det</span>
-                                    </div>
-                                    <div style="width: 40px; height: 60%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
-                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">SCBA</span>
-                                    </div>
-                                    <div style="width: 40px; height: 30%; background: linear-gradient(0deg, #f59e0b 0%, #ef4444 100%); border-radius: 4px; position: relative;">
-                                        <span style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted);">Suppres.</span>
-                                    </div>
-                                </div>
-                                <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 35px;">Asset Distribution by Fire Category</span>
+                            <div style="height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px dashed var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.1); padding: 10px;">
+                                <svg viewBox="0 0 400 150" style="width: 100%; height: 100%;">
+                                    <defs>
+                                        <linearGradient id="cyl-grad-1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#b91c1c" />
+                                            <stop offset="30%" stop-color="#ef4444" />
+                                            <stop offset="70%" stop-color="#f97316" />
+                                            <stop offset="100%" stop-color="#ea580c" />
+                                        </linearGradient>
+                                        <linearGradient id="cyl-grad-2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#ea580c" />
+                                            <stop offset="30%" stop-color="#f97316" />
+                                            <stop offset="70%" stop-color="#fca5a5" />
+                                            <stop offset="100%" stop-color="#ef4444" />
+                                        </linearGradient>
+                                        <linearGradient id="cyl-grad-3" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#b45309" />
+                                            <stop offset="30%" stop-color="#f59e0b" />
+                                            <stop offset="70%" stop-color="#eab308" />
+                                            <stop offset="100%" stop-color="#d97706" />
+                                        </linearGradient>
+                                    </defs>
+                                    
+                                    <!-- Grid Lines -->
+                                    <line x1="30" y1="20" x2="370" y2="20" stroke="rgba(255,255,255,0.03)" />
+                                    <line x1="30" y1="55" x2="370" y2="55" stroke="rgba(255,255,255,0.03)" />
+                                    <line x1="30" y1="90" x2="370" y2="90" stroke="rgba(255,255,255,0.03)" />
+                                    <line x1="30" y1="120" x2="370" y2="120" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" />
+                                    
+                                    <!-- Cylinder 1 (Exting.) - Height 95% (Top: 25) -->
+                                    <g>
+                                        <ellipse cx="60" cy="120" rx="18" ry="6" fill="#7f1d1d" />
+                                        <path d="M42 25 L78 25 L78 120 L42 120 Z" fill="url(#cyl-grad-1)" />
+                                        <ellipse cx="60" cy="25" rx="18" ry="6" fill="#fca5a5" />
+                                        <text x="60" y="140" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-weight="600">Exting.</text>
+                                    </g>
+                                    
+                                    <!-- Cylinder 2 (Alarms) - Height 45% (Top: 75) -->
+                                    <g>
+                                        <ellipse cx="130" cy="120" rx="18" ry="6" fill="#7f1d1d" />
+                                        <path d="M112 75 L148 75 L148 120 L112 120 Z" fill="url(#cyl-grad-2)" />
+                                        <ellipse cx="130" cy="75" rx="18" ry="6" fill="#fca5a5" />
+                                        <text x="130" y="140" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-weight="600">Alarms</text>
+                                    </g>
+
+                                    <!-- Cylinder 3 (Gas Det) - Height 35% (Top: 85) -->
+                                    <g>
+                                        <ellipse cx="200" cy="120" rx="18" ry="6" fill="#78350f" />
+                                        <path d="M182 85 L218 85 L218 120 L182 120 Z" fill="url(#cyl-grad-3)" />
+                                        <ellipse cx="200" cy="85" rx="18" ry="6" fill="#fef08a" />
+                                        <text x="200" y="140" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-weight="600">Gas Det</text>
+                                    </g>
+
+                                    <!-- Cylinder 4 (SCBA) - Height 60% (Top: 60) -->
+                                    <g>
+                                        <ellipse cx="270" cy="120" rx="18" ry="6" fill="#7f1d1d" />
+                                        <path d="M252 60 L288 60 L288 120 L252 120 Z" fill="url(#cyl-grad-1)" />
+                                        <ellipse cx="270" cy="60" rx="18" ry="6" fill="#fca5a5" />
+                                        <text x="270" y="140" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-weight="600">SCBA</text>
+                                    </g>
+
+                                    <!-- Cylinder 5 (Suppres.) - Height 30% (Top: 90) -->
+                                    <g>
+                                        <ellipse cx="340" cy="120" rx="18" ry="6" fill="#7f1d1d" />
+                                        <path d="M322 90 L358 90 L358 120 L322 120 Z" fill="url(#cyl-grad-2)" />
+                                        <ellipse cx="340" cy="90" rx="18" ry="6" fill="#fca5a5" />
+                                        <text x="340" y="140" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-weight="600">Suppres.</text>
+                                    </g>
+                                </svg>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Asset Distribution by Fire Category</span>
                             </div>
                         </div>
 
@@ -689,12 +740,11 @@
                                 <div class="chat-msg assistant">
                                     <div class="chat-avatar">AI</div>
                                     <div class="chat-bubble">
-                                        Hello! I am the **FireSafe Compliance Assistant**. I have operational access to:
-                                        - **National Fire Protection Association (NFPA)** standards
-                                        - Customer AMC contracts and schedules
-                                        - Equipment Service Logs and timelines
-                                        - Inspection histories & fail reasons
-                                        
+                                        Hello! I am the <strong>FireSafe Compliance Assistant</strong>. I have operational access to:<br><br>
+                                        &bull; <strong>National Fire Protection Association (NFPA)</strong> standards<br>
+                                        &bull; Customer AMC contracts and schedules<br>
+                                        &bull; Equipment Service Logs and timelines<br>
+                                        &bull; Inspection histories & fail reasons<br><br>
                                         How can I assist you with your compliance audits or service schedules today?
                                     </div>
                                 </div>
@@ -771,7 +821,7 @@
                                 <i data-lucide="folder"></i>
                                 Safety Certificates & Local Assets Ledger
                             </span>
-                            <button class="btn btn-secondary btn-sm" onclick="showToast('Customer Portal', 'Downloading full PDF certificate archive...', 'info')">
+                            <button class="btn btn-secondary btn-sm" onclick="downloadAllCertificates()">
                                 <i data-lucide="download"></i>
                                 Download All Certificates
                             </button>

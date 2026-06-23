@@ -178,6 +178,11 @@ function switchTab(tabId) {
 
     if (tabId === 'cctv') {
         initCctvLoop();
+    } else {
+        if (typeof cctvAudioInterval !== 'undefined' && cctvAudioInterval) {
+            clearInterval(cctvAudioInterval);
+            cctvAudioInterval = null;
+        }
     }
 }
 
@@ -300,8 +305,67 @@ function changeCustomerSite(siteId) {
 
     // Advance simulator step 1 if site is changed during Guided Walkthrough
     if (appState.simulationStep === 1) {
-        nextSimStep();
+        setTimeout(() => {
+            if (appState.simulationStep === 1) {
+                nextSimStep();
+            }
+        }, 50);
     }
+}
+
+function selectEquipment(type) {
+    let assetId = null;
+    if (type === 'fire-ext') {
+        const siteAssets = sitesDatabase[appState.selectedSiteId].assets;
+        const asset = assetsDatabase.find(a => siteAssets.includes(a.id) && a.type === 'Fire Extinguisher');
+        if (asset) assetId = asset.id;
+    } else if (type === 'scba') {
+        const siteAssets = sitesDatabase[appState.selectedSiteId].assets;
+        const asset = assetsDatabase.find(a => siteAssets.includes(a.id) && a.type === 'SCBA');
+        if (asset) assetId = asset.id;
+    } else {
+        const siteAssets = sitesDatabase[appState.selectedSiteId].assets;
+        if (siteAssets && siteAssets.length > 0) assetId = siteAssets[0];
+    }
+    
+    if (assetId) {
+        appState.selectedEquipmentId = assetId;
+        populateSiteEquipmentList();
+        renderAiOverlayCanvas();
+        
+        const startBtn = document.getElementById('start-analysis-btn');
+        if (startBtn) {
+            if (assetId === 'FE-102') {
+                startBtn.disabled = appState.selectedPhotos.length === 0;
+            } else {
+                startBtn.disabled = true;
+            }
+        }
+    }
+}
+
+function togglePhotoSelection(photoId) {
+    const idx = appState.selectedPhotos.indexOf(photoId);
+    const card = document.getElementById(`photo-${photoId}`);
+    
+    if (idx > -1) {
+        appState.selectedPhotos.splice(idx, 1);
+        if (card) card.classList.remove('selected');
+    } else {
+        appState.selectedPhotos.push(photoId);
+        if (card) card.classList.add('selected');
+    }
+    
+    const startBtn = document.getElementById('start-analysis-btn');
+    if (startBtn) {
+        if (appState.selectedEquipmentId === 'FE-102' && appState.selectedPhotos.length > 0) {
+            startBtn.disabled = false;
+        } else {
+            startBtn.disabled = true;
+        }
+    }
+    
+    renderAiOverlayCanvas();
 }
 
 function populateSiteEquipmentList() {
@@ -413,7 +477,7 @@ function populateLedgers() {
         assetsDatabase.forEach(asset => {
             if (asset.siteId === 'site-port') {
                 let statusBadge = 'badge-passed';
-                let certText = `<a href="#" onclick="viewComplianceReport(); event.stopPropagation();" style="color: var(--primary); text-decoration: underline;">FS-CERT-${asset.id}</a>`;
+                let certText = `<a href="#" onclick="downloadCertificate('${asset.id}'); event.stopPropagation();" style="color: var(--primary); text-decoration: underline;">FS-CERT-${asset.id}</a>`;
                 if (asset.status === 'Failed') {
                     statusBadge = 'badge-failed';
                     certText = `<span style="color: var(--color-fail); font-weight:600;">SUSPENDED</span>`;
@@ -799,13 +863,124 @@ function generateAutomatedReport() {
 }
 
 // 11. Compliance AI chatbot
+let cachedApiKey = null;
+async function getApiKey() {
+    if (cachedApiKey) return cachedApiKey;
+
+    try {
+        const res = await fetch('.env');
+        if (res.ok) {
+            const text = await res.text();
+            const match = text.match(/VITE_GROQ_API_KEY\s*=\s*([^\r\n]+)/) || text.match(/GROQ_API_KEY\s*=\s*([^\r\n]+)/);
+            if (match && match[1]) {
+                cachedApiKey = match[1].trim();
+                return cachedApiKey;
+            }
+        }
+    } catch (e) {
+        console.warn("Could not read .env file dynamically");
+    }
+
+    try {
+        if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GROQ_API_KEY) {
+            cachedApiKey = import.meta.env.VITE_GROQ_API_KEY;
+            return cachedApiKey;
+        }
+    } catch (e) {}
+
+    const storedKey = localStorage.getItem('groq_api_key');
+    if (storedKey) {
+        cachedApiKey = storedKey;
+        return cachedApiKey;
+    }
+
+    return "";
+}
+
+async function getGroqChatResponse(query, onChunk) {
+    try {
+        const apiKey = await getApiKey();
+        if (!apiKey) {
+            throw new Error("No API key available");
+        }
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [
+                    {
+                        role: "system",
+                        content: `You are the FireSafe Compliance Assistant. You are helpfully auditing and checking fire safety assets.
+Keep your answers professional and concise.
+You have context on:
+- Customer Sites: Terminal 1 - Cargo Port Facility (assets: FE-102, SC-908), Corporate Headquarters (assets: FA-301, FE-108), Main Logistics Depot (assets: GD-402, FS-504).
+- Asset FE-102: Portable CO2 Fire Extinguisher, Bridge Cabin East. Expiry: 2029-01-12. Status is Failed because cylinder pressure read 95 PSI (below 110 PSI limit) and safety seal pin was missing.
+- Asset SC-908: SCBA Breathing Apparatus, Control Center. Status is Pending.
+- active AMCs due in June 2026: FE-102 routine monthly check, SC-908 monthly cylinder level check (overdue), GD-402 H2S Detector span calibration.
+If asked about other assets or questions outside fire safety, be helpful but bring it back to safety compliance.`
+                    },
+                    {
+                        role: "user",
+                        content: query
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 1024,
+                stream: true
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let done = false;
+        let buffer = "";
+
+        while (!done) {
+            const { value, done: readerDone } = await reader.read();
+            done = readerDone;
+            buffer += decoder.decode(value, { stream: !done });
+
+            const lines = buffer.split("\n");
+            buffer = lines.pop(); // keep last incomplete line in buffer
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+                if (trimmed === "data: [DONE]") continue;
+                if (trimmed.startsWith("data: ")) {
+                    try {
+                        const json = JSON.parse(trimmed.slice(6));
+                        const content = json.choices[0]?.delta?.content || "";
+                        if (content) {
+                            onChunk(content);
+                        }
+                    } catch (e) {
+                        // Ignore parsing errors of partial JSON
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Groq API Call failed:", error);
+        onChunk("\n\n*(Error connecting to Llama 3.3 model. Falling back to offline responder)*\n\n" + formulateChatbotResponse(query));
+    }
+}
+
 function askPresetQuestion(questionText) {
     const input = document.getElementById('chat-user-input');
     input.value = questionText;
     sendChatMessage();
 }
 
-function sendChatMessage() {
+async function sendChatMessage() {
     const input = document.getElementById('chat-user-input');
     const query = input.value.trim();
     if (!query) return;
@@ -813,10 +988,47 @@ function sendChatMessage() {
     appendChatMessage(query, 'user');
     input.value = '';
 
-    setTimeout(() => {
-        const reply = formulateChatbotResponse(query);
-        appendChatMessage(reply, 'assistant');
-    }, 800);
+    const history = document.getElementById('chat-history-log');
+    if (!history) return;
+
+    const msg = document.createElement('div');
+    msg.className = 'chat-msg assistant';
+    msg.innerHTML = `
+        <div class="chat-avatar">AI</div>
+        <div class="chat-bubble">
+            <span class="chat-typing-dots"><span></span><span></span><span></span></span>
+        </div>
+    `;
+    history.appendChild(msg);
+    history.scrollTop = history.scrollHeight;
+
+    const bubble = msg.querySelector('.chat-bubble');
+    let fullText = "";
+
+    await getGroqChatResponse(query, (chunk) => {
+        const typing = bubble.querySelector('.chat-typing-dots');
+        if (typing) typing.remove();
+
+        fullText += chunk;
+        
+        let formattedText = fullText
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/- (.*?)\n/g, '<li>$1</li>')
+            .replace(/\n\n/g, '<br><br>');
+            
+        if (formattedText.includes('<li>')) {
+            formattedText = formattedText.replace(/(<li>.*?<\/li>)/s, '<ul>$1</ul>');
+        }
+        
+        bubble.innerHTML = formattedText;
+        history.scrollTop = history.scrollHeight;
+    });
+
+    if (appState.simulationStep === 4 && (query.toLowerCase().includes('fail') || query.toLowerCase().includes('fe-102') || query.toLowerCase().includes('why did'))) {
+        setTimeout(() => {
+            nextSimStep();
+        }, 1500);
+    }
 }
 
 function appendChatMessage(text, sender) {
@@ -845,12 +1057,6 @@ function appendChatMessage(text, sender) {
 
     history.appendChild(msg);
     history.scrollTop = history.scrollHeight;
-    
-    if (appState.simulationStep === 4 && (text.toLowerCase().includes('fail') || text.toLowerCase().includes('fe-102') || text.toLowerCase().includes('why did'))) {
-        setTimeout(() => {
-            nextSimStep();
-        }, 1500);
-    }
 }
 
 function formulateChatbotResponse(query) {
@@ -1022,6 +1228,31 @@ let worker1X = 120;
 let worker1Dir = 1;
 let worker2X = 350;
 let worker2Dir = -1;
+let cctvAudioInterval = null;
+let audioCtx = null;
+
+function playAlarmBeep() {
+    try {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+    } catch (e) {
+        console.error("Audio failed:", e);
+    }
+}
 
 function initCctvLoop() {
     cctvCanvas = document.getElementById('cctv-canvas');
@@ -1076,6 +1307,22 @@ function drawCctvFrame() {
     if (appState.cctvSafetyBreach) {
         worker2X = 490; 
         drawWorkerNode(worker2X, 220, "Crew Member", true, false); 
+        
+        // Strobe lighting flashing effect on canvas
+        const strobe = 0.05 + 0.12 * ((Math.sin(Date.now() / 150) + 1) / 2);
+        cctvCtx.fillStyle = `rgba(239, 68, 68, ${strobe})`;
+        cctvCtx.fillRect(0, 0, 640, 360);
+
+        // Active Threat Alarm Banner inside canvas
+        if (Math.floor(Date.now() / 300) % 2 === 0) {
+            cctvCtx.fillStyle = '#ef4444';
+            cctvCtx.fillRect(0, 0, 640, 24);
+            cctvCtx.fillStyle = '#ffffff';
+            cctvCtx.font = 'bold 10px Arial';
+            cctvCtx.textAlign = 'center';
+            cctvCtx.fillText("🚨 WARNING: HAZARD BOUNDARY BREACH - NO HARNESS 🚨", 320, 16);
+            cctvCtx.textAlign = 'left';
+        }
     } else {
         drawWorkerNode(worker2X, 220, "David Surveyor", true, true);
     }
@@ -1125,6 +1372,15 @@ function drawWorkerNode(x, y, name, hasHelmet, hasHarness) {
         cctvCtx.fillStyle = '#22c55e';
         cctvCtx.font = '8px Arial';
         cctvCtx.fillText("PPE: COMPLIANT [96%]", boxLeft, boxTop - 4);
+
+        // Scanning laser sweep lines
+        const sweepY = boxTop + 2 + ((Math.sin(Date.now() / 150) + 1) / 2) * (boxHeight - 4);
+        cctvCtx.strokeStyle = 'rgba(34, 197, 94, 0.4)';
+        cctvCtx.lineWidth = 1.5;
+        cctvCtx.beginPath();
+        cctvCtx.moveTo(boxLeft + 1, sweepY);
+        cctvCtx.lineTo(boxLeft + boxWidth - 1, sweepY);
+        cctvCtx.stroke();
     } else {
         const flashColor = (Math.floor(Date.now() / 250) % 2 === 0) ? '#ef4444' : 'rgba(239, 68, 68, 0.2)';
         cctvCtx.strokeStyle = flashColor;
@@ -1134,6 +1390,15 @@ function drawWorkerNode(x, y, name, hasHelmet, hasHarness) {
         cctvCtx.fillStyle = '#ef4444';
         cctvCtx.font = 'bold 8px Arial';
         cctvCtx.fillText("HAZARD: NO HARNESS", boxLeft, boxTop - 4);
+
+        // Faster scanning laser warning sweep lines
+        const sweepY = boxTop + 2 + ((Math.sin(Date.now() / 80) + 1) / 2) * (boxHeight - 4);
+        cctvCtx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
+        cctvCtx.lineWidth = 1.5;
+        cctvCtx.beginPath();
+        cctvCtx.moveTo(boxLeft + 1, sweepY);
+        cctvCtx.lineTo(boxLeft + boxWidth - 1, sweepY);
+        cctvCtx.stroke();
     }
 
     cctvCtx.fillStyle = '#94a3b8';
@@ -1146,6 +1411,11 @@ function simulateCctvBreach() {
         appState.cctvSafetyBreach = false;
         showToast("Safety Restored", "Crew member exited hazard rack. Bounding box cleared.", "pass");
         
+        if (cctvAudioInterval) {
+            clearInterval(cctvAudioInterval);
+            cctvAudioInterval = null;
+        }
+
         const log = document.getElementById('cctv-warnings-log');
         log.innerHTML = `
             <div class="feed-item" style="padding: 8px 0;">
@@ -1160,6 +1430,11 @@ function simulateCctvBreach() {
         appState.cctvSafetyBreach = true;
         showToast("SAFETY BREACH WARNING", "Worker entered Aft boundary without securing safety harness!", "fail");
         
+        playAlarmBeep();
+        if (!cctvAudioInterval) {
+            cctvAudioInterval = setInterval(playAlarmBeep, 1500);
+        }
+
         const log = document.getElementById('cctv-warnings-log');
         const warningItem = document.createElement('div');
         warningItem.className = 'feed-item';
@@ -1357,6 +1632,226 @@ function updateSimulatorUi() {
             dot.classList.add('completed');
         }
     });
+}
+
+function viewComplianceReport() {
+    switchTab('reports');
+}
+
+function filterAssetsTable() {
+    const searchVal = document.getElementById('asset-search-input').value.toLowerCase();
+    const typeVal = document.getElementById('asset-type-filter').value;
+    const tableBody = document.getElementById('assets-table-body');
+    if (!tableBody) return;
+    
+    const rows = tableBody.getElementsByTagName('tr');
+    for (let row of rows) {
+        if (row.cells.length < 5) continue;
+        const id = row.cells[0].textContent.toLowerCase();
+        const type = row.cells[1].textContent;
+        const site = row.cells[2].textContent.toLowerCase();
+        const mfg = row.cells[3].textContent.toLowerCase();
+        const model = row.cells[4].textContent.toLowerCase();
+        
+        const matchesSearch = id.includes(searchVal) || site.includes(searchVal) || mfg.includes(searchVal) || model.includes(searchVal) || type.toLowerCase().includes(searchVal);
+        const matchesType = typeVal === 'all' || type === typeVal;
+        
+        if (matchesSearch && matchesType) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    }
+}
+
+function downloadCertificate(assetId) {
+    const asset = assetsDatabase.find(a => a.id === assetId);
+    if (!asset) return;
+    
+    showToast('Customer Portal', `Downloading certificate for ${assetId}...`, 'info');
+    
+    const statusClass = asset.status === 'Passed' ? 'status-pass' : (asset.status === 'Failed' ? 'status-fail' : 'status-pending');
+    
+    let htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <title>FireSafe OS - Certificate ${assetId}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; color: #1e293b; padding: 40px; }
+        .cert-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; }
+        .logo { font-size: 1.3rem; font-weight: bold; color: #0f172a; }
+        .title { text-align: right; }
+        .title h2 { margin: 0; font-size: 1.2rem; color: #0f172a; margin-bottom: 4px; }
+        .title p { margin: 0; font-size: 0.75rem; color: #64748b; }
+        .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: #f8fafc; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .meta-item { display: flex; flex-direction: column; gap: 4px; }
+        .meta-item label { font-size: 0.7rem; color: #64748b; font-weight: bold; text-transform: uppercase; }
+        .meta-item span { font-size: 0.85rem; font-weight: 600; color: #334155; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .status-pass { background: #def7ec; color: #03543f; }
+        .status-fail { background: #fde8e8; color: #9b1c1c; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #edf2f7; font-size: 0.8rem; }
+        th { background: #f7fafc; color: #4a5568; text-transform: uppercase; font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+    <div class="cert-container">
+        <div class="header">
+            <div class="logo">🔥 FireSafe OS</div>
+            <div class="title">
+                <h2>COMPLIANCE CERTIFICATE</h2>
+                <p>Document ID: FS-CERT-${asset.id} &bull; Standards: NFPA 10</p>
+            </div>
+        </div>
+        <div class="meta-grid">
+            <div class="meta-item"><label>Asset ID</label><span>${asset.id}</span></div>
+            <div class="meta-item"><label>Equipment Type</label><span>${asset.type}</span></div>
+            <div class="meta-item"><label>Specific Location</label><span>${asset.location}</span></div>
+            <div class="meta-item"><label>Last Inspected</label><span>${asset.lastInspected}</span></div>
+            <div class="meta-item"><label>Status Verdict</label><span><span class="status-badge ${statusClass}">${asset.status}</span></span></div>
+            <div class="meta-item"><label>Expiry Date</label><span>${asset.expiry}</span></div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Checkpoint</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Cylinder Pressure Verification</td>
+                    <td>${asset.status === 'Failed' ? 'Pressure needle reads 95 PSI (Below regulatory 110 PSI limit).' : 'Pressure within nominal safety limits (120 - 150 PSI).'}</td>
+                    <td>${asset.status === 'Failed' ? 'FAIL' : 'PASS'}</td>
+                </tr>
+                <tr>
+                    <td>Nozzle Casing & Corrosion Check</td>
+                    <td>${asset.status === 'Failed' ? 'Surface oxidation detected on valve casing thread.' : 'No surface oxidation or valve thread breakdown detected.'}</td>
+                    <td>${asset.status === 'Failed' ? 'WARN' : 'PASS'}</td>
+                </tr>
+                <tr>
+                    <td>Tamper Seal & Safety Pin</td>
+                    <td>${asset.status === 'Failed' ? 'Safety pin wire lock and plastic tamper seal is missing.' : 'Safety safety ring pin secured and tamper seal fully intact.'}</td>
+                    <td>${asset.status === 'Failed' ? 'FAIL' : 'PASS'}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `FireSafe_Certificate_${assetId}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function downloadAllCertificates() {
+    showToast('Customer Portal', 'Generating compliance archive...', 'info');
+    
+    let htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <title>FireSafe OS - Compliance Certificates Archive</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; color: #1e293b; padding: 40px; }
+        .cert-container { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 800px; margin: 0 auto 30px auto; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; }
+        .logo { font-size: 1.3rem; font-weight: bold; color: #0f172a; }
+        .title { text-align: right; }
+        .title h2 { margin: 0; font-size: 1.2rem; color: #0f172a; margin-bottom: 4px; }
+        .title p { margin: 0; font-size: 0.75rem; color: #64748b; }
+        .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: #f8fafc; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .meta-item { display: flex; flex-direction: column; gap: 4px; }
+        .meta-item label { font-size: 0.7rem; color: #64748b; font-weight: bold; text-transform: uppercase; }
+        .meta-item span { font-size: 0.85rem; font-weight: 600; color: #334155; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .status-pass { background: #def7ec; color: #03543f; }
+        .status-fail { background: #fde8e8; color: #9b1c1c; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #edf2f7; font-size: 0.8rem; }
+        th { background: #f7fafc; color: #4a5568; text-transform: uppercase; font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; font-size: 1.6rem; color: #0f172a; margin-bottom: 30px;">FireSafe OS Certified Inspection Archive</h1>
+`;
+
+    const siteAssets = sitesDatabase['site-port'].assets;
+    assetsDatabase.forEach(asset => {
+        if (siteAssets.includes(asset.id)) {
+            const statusClass = asset.status === 'Passed' ? 'status-pass' : (asset.status === 'Failed' ? 'status-fail' : 'status-pending');
+            htmlContent += `
+            <div class="cert-container">
+                <div class="header">
+                    <div class="logo">🔥 FireSafe OS</div>
+                    <div class="title">
+                        <h2>COMPLIANCE CERTIFICATE</h2>
+                        <p>Document ID: FS-CERT-${asset.id} &bull; Standards: NFPA 10</p>
+                    </div>
+                </div>
+                <div class="meta-grid">
+                    <div class="meta-item"><label>Asset ID</label><span>${asset.id}</span></div>
+                    <div class="meta-item"><label>Equipment Type</label><span>${asset.type}</span></div>
+                    <div class="meta-item"><label>Specific Location</label><span>${asset.location}</span></div>
+                    <div class="meta-item"><label>Last Inspected</label><span>${asset.lastInspected}</span></div>
+                    <div class="meta-item"><label>Status Verdict</label><span><span class="status-badge ${statusClass}">${asset.status}</span></span></div>
+                    <div class="meta-item"><label>Expiry Date</label><span>${asset.expiry}</span></div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Checkpoint</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cylinder Pressure Verification</td>
+                            <td>${asset.status === 'Failed' ? 'Pressure needle reads 95 PSI (Below regulatory 110 PSI limit).' : 'Pressure within nominal safety limits (120 - 150 PSI).'}</td>
+                            <td>${asset.status === 'Failed' ? 'FAIL' : 'PASS'}</td>
+                        </tr>
+                        <tr>
+                            <td>Nozzle Casing & Corrosion Check</td>
+                            <td>${asset.status === 'Failed' ? 'Surface oxidation detected on valve casing thread.' : 'No surface oxidation or valve thread breakdown detected.'}</td>
+                            <td>${asset.status === 'Failed' ? 'WARN' : 'PASS'}</td>
+                        </tr>
+                        <tr>
+                            <td>Tamper Seal & Safety Pin</td>
+                            <td>${asset.status === 'Failed' ? 'Safety pin wire lock and plastic tamper seal is missing.' : 'Safety safety ring pin secured and tamper seal fully intact.'}</td>
+                            <td>${asset.status === 'Failed' ? 'FAIL' : 'PASS'}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `;
+        }
+    });
+
+    htmlContent += `
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `FireSafe_Compliance_Certificates.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 // 17. App Bootstrap
