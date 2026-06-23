@@ -881,13 +881,6 @@ async function getApiKey() {
         console.warn("Could not read .env file dynamically");
     }
 
-    try {
-        if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GROQ_API_KEY) {
-            cachedApiKey = import.meta.env.VITE_GROQ_API_KEY;
-            return cachedApiKey;
-        }
-    } catch (e) {}
-
     const storedKey = localStorage.getItem('groq_api_key');
     if (storedKey) {
         cachedApiKey = storedKey;
