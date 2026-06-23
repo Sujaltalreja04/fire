@@ -2173,3 +2173,91 @@ body.light-mode .site-select-dropdown {
         padding: 0;
     }
 }
+
+/* Responsive Mobile Styling Accents */
+@media screen and (max-width: 1024px) {
+    .app-container {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Collapsible Sidebar Configuration */
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        z-index: 999;
+        transition: left var(--transition-normal);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    .sidebar.active {
+        left: 0;
+    }
+    
+    .main-layout {
+        grid-template-rows: 70px 1fr;
+        height: 100vh;
+        width: 100vw;
+    }
+    
+    .top-header {
+        padding: 0 20px;
+    }
+    
+    /* Layout column stackings */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .inspection-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .offline-steps-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .telemetry-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dispatch-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .right-dispatch-column {
+        margin-top: 20px;
+    }
+    
+    /* CCTV Canvas auto-scaling */
+    .cctv-canvas {
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    /* Navigation Hamburger Icon display */
+    .menu-toggle-btn {
+        display: flex !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    .report-meta-grid {
+        grid-template-columns: 1fr;
+    }
+    .report-sign-off-box {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .top-header h2 {
+        font-size: 1.1rem;
+    }
+    .content-viewport {
+        padding: 15px;
+    }
+}

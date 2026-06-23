@@ -142,7 +142,8 @@ let appState = {
     themeMode: 'dark',
     selectedTechnician: 'sujal',
     cctvSafetyBreach: false,
-    toastCount: 0
+    toastCount: 0,
+    uploadedImageDataUrl: null
 };
 
 // 2. Tab Router
@@ -164,6 +165,7 @@ function switchTab(tabId) {
     const headerTitles = {
         'dashboard': 'Executive Control Dashboard',
         'inspection': 'Smart Inspection Workflow',
+        'offline-scanning': 'Offline Safety Inspection & Certification',
         'reports': 'Automated Reports & Certificates',
         'assets': 'Safety Asset Registry',
         'amc': 'AMC & Service Management Ledger',
@@ -174,7 +176,8 @@ function switchTab(tabId) {
         'cctv': 'CCTV Safety Video Analytics',
         'analytics': 'Predictive Health Forecasting'
     };
-    document.getElementById('current-view-title').innerText = headerTitles[tabId] || 'Overview';
+    const titleElem = document.getElementById('current-view-title');
+    if (titleElem) titleElem.innerText = headerTitles[tabId] || 'Overview';
 
     if (tabId === 'cctv') {
         initCctvLoop();
@@ -183,6 +186,19 @@ function switchTab(tabId) {
             clearInterval(cctvAudioInterval);
             cctvAudioInterval = null;
         }
+    }
+
+    // Auto close mobile sidebar if open
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar && sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+    }
+}
+
+function toggleMobileSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
     }
 }
 
@@ -358,7 +374,7 @@ function togglePhotoSelection(photoId) {
     
     const startBtn = document.getElementById('start-analysis-btn');
     if (startBtn) {
-        if (appState.selectedEquipmentId === 'FE-102' && appState.selectedPhotos.length > 0) {
+        if (appState.selectedEquipmentId === 'FE-102' && (appState.selectedPhotos.length > 0 || appState.uploadedImageDataUrl)) {
             startBtn.disabled = false;
         } else {
             startBtn.disabled = true;
@@ -366,6 +382,46 @@ function togglePhotoSelection(photoId) {
     }
     
     renderAiOverlayCanvas();
+}
+
+function triggerMainImageUpload() {
+    if (appState.selectedEquipmentId !== 'FE-102') {
+        showToast("Equipment Required", "Please select or scan an asset first (e.g. FE-102).", "warn");
+        return;
+    }
+    const fileInput = document.getElementById('main-image-file-input');
+    if (fileInput) fileInput.click();
+}
+
+function handleMainImageUpload(input) {
+    if (appState.selectedEquipmentId !== 'FE-102') {
+        showToast("Equipment Required", "Please select or scan an asset first (e.g. FE-102).", "warn");
+        input.value = '';
+        return;
+    }
+
+    const file = input.files[0];
+    if (!file) return;
+
+    showToast("Processing Image", `Loading ${file.name}...`, "info");
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        appState.uploadedImageDataUrl = e.target.result;
+        
+        // Auto select a checkpoint for illustration when uploading custom images
+        if (appState.selectedPhotos.length === 0) {
+            togglePhotoSelection('gauge');
+        } else {
+            renderAiOverlayCanvas();
+        }
+        
+        showToast("Image Uploaded", "Custom inspection photo loaded. Ready for AI analysis.", "pass");
+        
+        const startBtn = document.getElementById('start-analysis-btn');
+        if (startBtn) startBtn.disabled = false;
+    };
+    reader.readAsDataURL(file);
 }
 
 function populateSiteEquipmentList() {
@@ -581,7 +637,7 @@ function renderAiOverlayCanvas() {
     const container = document.getElementById('ai-photo-overlay-container');
     if (!container) return;
 
-    if (appState.selectedEquipmentId !== 'FE-102' || appState.selectedPhotos.length === 0) {
+    if (appState.selectedEquipmentId !== 'FE-102' || (appState.selectedPhotos.length === 0 && !appState.uploadedImageDataUrl)) {
         container.innerHTML = `
             <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">
                 <i data-lucide="image" style="width: 36px; height: 36px; stroke-width: 1.5; margin-bottom: 8px;"></i>
@@ -594,18 +650,31 @@ function renderAiOverlayCanvas() {
 
     const hasBeenAnalyzed = (document.getElementById('compliance-verdict-box').style.display === 'flex');
 
+    let canvasContent = '';
+    if (appState.uploadedImageDataUrl) {
+        canvasContent = `
+            <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:8px; background:#090d16;">
+                <img src="${appState.uploadedImageDataUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" />
+            </div>
+        `;
+    } else {
+        canvasContent = `
+            <svg viewBox="0 0 320 180" style="width:100%; height:100%; fill:none; stroke-linecap:round; stroke-linejoin:round;">
+                <path d="M120 70 L180 70 L180 150 A30 30 0 0 1 120 150 Z" fill="#b91c1c" stroke="#f8fafc" stroke-width="2" />
+                <path d="M140 70 L140 45 L130 45 A10 10 0 0 1 140 35 L170 35" stroke="#f8fafc" stroke-width="2"/>
+                <path d="M150 45 L150 30" stroke="#f8fafc" stroke-width="3" />
+                <path d="M150 45 Q190 50 190 120" stroke="#000" stroke-width="3.5" />
+                
+                ${appState.selectedPhotos.includes('gauge') ? `<circle cx="80" cy="55" r="15" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="3,3" />` : ''}
+                ${appState.selectedPhotos.includes('seal') ? `<circle cx="210" cy="40" r="15" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="3,3" />` : ''}
+                ${appState.selectedPhotos.includes('corrosion') ? `<circle cx="150" cy="80" r="15" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="3,3" />` : ''}
+                <circle cx="150" cy="50" r="3" fill="#f8fafc"/>
+            </svg>
+        `;
+    }
+
     container.innerHTML = `
-        <svg viewBox="0 0 320 180" style="width:100%; height:100%; fill:none; stroke-linecap:round; stroke-linejoin:round;">
-            <path d="M120 70 L180 70 L180 150 A30 30 0 0 1 120 150 Z" fill="#b91c1c" stroke="#f8fafc" stroke-width="2" />
-            <path d="M140 70 L140 45 L130 45 A10 10 0 0 1 140 35 L170 35" stroke="#f8fafc" stroke-width="2"/>
-            <path d="M150 45 L150 30" stroke="#f8fafc" stroke-width="3" />
-            <path d="M150 45 Q190 50 190 120" stroke="#000" stroke-width="3.5" />
-            
-            ${appState.selectedPhotos.includes('gauge') ? `<circle cx="80" cy="55" r="15" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="3,3" />` : ''}
-            ${appState.selectedPhotos.includes('seal') ? `<circle cx="210" cy="40" r="15" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="3,3" />` : ''}
-            ${appState.selectedPhotos.includes('corrosion') ? `<circle cx="150" cy="80" r="15" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="3,3" />` : ''}
-            <circle cx="150" cy="50" r="3" fill="#f8fafc"/>
-        </svg>
+        ${canvasContent}
 
         ${(hasBeenAnalyzed && appState.selectedPhotos.includes('gauge')) ? `
             <div class="ai-bounding-box" style="top: 25px; left: 35px; width: 65px; height: 65px;">

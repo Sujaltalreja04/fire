@@ -7,6 +7,7 @@
     <title>FireSafe OS - Safety Compliance & Inspection Platform</title>
     <!-- Custom styling -->
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="offline_scanning.css">
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -36,6 +37,10 @@
                         <li class="nav-item" id="nav-inspection" onclick="switchTab('inspection')">
                             <i data-lucide="clipboard-check"></i>
                             <span>Smart Inspection</span>
+                        </li>
+                        <li class="nav-item" id="nav-offline-scanning" onclick="switchTab('offline-scanning')">
+                            <i data-lucide="scan-line"></i>
+                            <span>Offline Scanning</span>
                         </li>
                         <li class="nav-item" id="nav-reports" onclick="switchTab('reports')">
                             <i data-lucide="file-badge"></i>
@@ -91,13 +96,14 @@
 
         <!-- Right Side Main Section -->
         <div class="main-layout">
-            
-            <!-- Top Header -->
-            <header class="top-header">
-                <div class="header-title-area">
+            <header class="main-header">
+                <div class="header-left" style="display: flex; align-items: center; gap: 10px;">
+                    <button class="icon-btn menu-toggle-btn" onclick="toggleMobileSidebar()" style="display: none;">
+                        <i data-lucide="menu"></i>
+                    </button>
                     <h2 id="current-view-title">Executive Dashboard</h2>
                 </div>
-                <div class="header-actions">
+                <div class="header-right">
                     <div class="system-status">
                         <div class="pulse-dot" style="background: var(--color-pass); box-shadow: 0 0 10px var(--color-pass);"></div>
                         <span>Safety Engine Sync</span>
@@ -368,6 +374,234 @@
                     </div>
                 </div>
 
+                <!-- TAB: OFFLINE SAFETY SCANNING & CERTIFICATION -->
+                <div class="viewport-tab" id="tab-offline-scanning">
+                    <div class="offline-workspace">
+                        
+                        <!-- Network status & sync bar -->
+                        <div class="sync-status-bar">
+                            <div class="sync-network-info">
+                                <div class="sync-state-indicator" id="offline-network-indicator">
+                                    <div class="pulse-dot-amber" id="network-pulse-dot"></div>
+                                    <span id="network-status-text">OFFLINE STATE (Local Cache)</span>
+                                </div>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">
+                                    Edge AI models loaded. SQLite offline cache active.
+                                </div>
+                            </div>
+                            <div class="sync-actions-panel">
+                                <button class="btn btn-secondary btn-sm" onclick="toggleOfflineMode()" id="offline-toggle-btn">Go Online</button>
+                                <div class="sync-progress-container">
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <span>Cloud Sync:</span>
+                                        <span id="sync-percent-text" style="display:none; font-weight:700;">0%</span>
+                                    </div>
+                                    <div class="progress-bar-bg" style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                                        <div class="progress-bar-fill" id="sync-prog-fill" style="width:0%; height:100%; background:var(--color-pass); transition: width 0.2s;"></div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="runCloudSynchronization()" id="sync-now-btn" disabled>
+                                    <i data-lucide="cloud-lightning" style="width:14px; display:inline-block; vertical-align:middle;"></i> Sync with Cloud
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Main columns -->
+                        <div class="offline-steps-grid">
+                            
+                            <!-- Left Column -->
+                            <div style="display:flex; flex-direction:column; gap:24px;">
+                                
+                                <!-- Step 1: Lookup and scanner -->
+                                <div class="glass-panel" style="margin-bottom:0;">
+                                    <div class="offline-panel-header">
+                                        <div class="offline-panel-title">
+                                            <i data-lucide="database"></i>
+                                            Step 1: Asset Lookup & Identification
+                                        </div>
+                                        <button class="btn btn-secondary btn-sm" onclick="simulateOfflineQrScan()">
+                                            <i data-lucide="qr-code"></i> Sim Scan QR
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="asset-lookup-search-container">
+                                        <label style="font-size:0.75rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">SEARCH CUSTOMER ASSET REGISTRY</label>
+                                        <div class="offline-asset-input-wrap">
+                                            <input type="text" id="offline-asset-search" placeholder="Type Asset ID (e.g. FE-102, SC-908)...">
+                                        </div>
+                                    </div>
+
+                                    <div class="offline-asset-results-list" id="offline-asset-list">
+                                        <!-- Rendered dynamically -->
+                                    </div>
+
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; background:rgba(0,0,0,0.15); padding:12px; border-radius:8px; font-size:0.75rem; border:1px solid var(--border-color); margin-top:14px;">
+                                        <div>
+                                            <label style="color:var(--text-muted); font-weight:600; display:block; font-size:0.6rem; text-transform:uppercase;">Selected ID</label>
+                                            <strong id="offline-asset-id-display" style="color:var(--primary);">-</strong>
+                                        </div>
+                                        <div>
+                                            <label style="color:var(--text-muted); font-weight:600; display:block; font-size:0.6rem; text-transform:uppercase;">Asset Name</label>
+                                            <span id="offline-asset-name-display">-</span>
+                                        </div>
+                                        <div style="grid-column: span 2; border-top:1px solid rgba(255,255,255,0.05); padding-top:6px; margin-top:4px;">
+                                            <label style="color:var(--text-muted); font-weight:600; display:block; font-size:0.6rem; text-transform:uppercase;">Customer Location Facility</label>
+                                            <span id="offline-asset-site-display">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Data Capture & OCR -->
+                                <div class="glass-panel" style="margin-bottom:0;">
+                                    <div class="offline-panel-header">
+                                        <div class="offline-panel-title">
+                                            <i data-lucide="camera"></i>
+                                            Step 2: Visual Evidence & OCR Data Extraction
+                                        </div>
+                                    </div>
+
+                                    <div class="photo-upload-container" style="margin-top:0;">
+                                        <label style="font-size:0.75rem; font-weight:600; color:var(--text-muted);">SELECT EVIDENCE PHOTOS</label>
+                                        <div class="photo-cards-grid">
+                                            <div class="photo-card" id="offline-photo-gauge" onclick="toggleOfflinePhoto('gauge')">
+                                                <div style="width:100%; height:80px; background:#1b2438; display:flex; align-items:center; justify-content:center; position:relative;">
+                                                    <svg viewBox="0 0 100 100" style="width: 44px; height: 44px; stroke: var(--color-fail); fill: none; stroke-width: 5;">
+                                                        <circle cx="50" cy="50" r="40"/>
+                                                        <line x1="50" y1="50" x2="20" y2="35" stroke-width="6"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="photo-label">Pressure Gauge</div>
+                                                <div class="selected-checkmark"><i data-lucide="check"></i></div>
+                                            </div>
+                                            <div class="photo-card" id="offline-photo-corrosion" onclick="toggleOfflinePhoto('corrosion')">
+                                                <div style="width:100%; height:80px; background:#1b2438; display:flex; align-items:center; justify-content:center; position:relative;">
+                                                    <svg viewBox="0 0 100 100" style="width: 44px; height: 44px; stroke: #b45309; fill: none; stroke-width: 4;">
+                                                        <circle cx="48" cy="28" r="7" fill="#b45309" fill-opacity="0.8"/>
+                                                        <circle cx="53" cy="38" r="9" fill="#b45309" fill-opacity="0.8"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="photo-label">Rust / Casing</div>
+                                                <div class="selected-checkmark"><i data-lucide="check"></i></div>
+                                            </div>
+                                            <div class="photo-card" id="offline-photo-seal" onclick="toggleOfflinePhoto('seal')">
+                                                <div style="width:100%; height:80px; background:#1b2438; display:flex; align-items:center; justify-content:center; position:relative;">
+                                                    <svg viewBox="0 0 100 100" style="width: 44px; height: 44px; stroke: var(--color-fail); fill: none; stroke-width: 4;">
+                                                        <circle cx="50" cy="40" r="14" stroke-dasharray="4, 4"/>
+                                                        <line x1="50" y1="54" x2="50" y2="80" stroke-dasharray="4, 4"/>
+                                                        <path d="M35 70 L65 70" stroke-width="6" />
+                                                    </svg>
+                                                </div>
+                                                <div class="photo-label">Tamper Seal</div>
+                                                <div class="selected-checkmark"><i data-lucide="check"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="custom-photo-uploader" style="margin-top: 14px; margin-bottom: 14px;">
+                                        <input type="file" id="offline-image-upload" accept="image/*" style="display:none;" onchange="handleOfflineImageUpload(this)">
+                                        <div class="file-input-btn" onclick="document.getElementById('offline-image-upload').click()">
+                                            <i data-lucide="upload-cloud"></i> Upload High-Resolution Casing Image
+                                        </div>
+                                    </div>
+
+                                    <div class="ocr-simulation-box">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <label style="font-size:0.75rem; font-weight:700; color:var(--text-main);">Offline OCR Extract Engine</label>
+                                            <button class="btn btn-secondary btn-sm" id="ocr-run-btn" onclick="runOcrExtraction()" disabled>Run OCR Parse</button>
+                                        </div>
+                                        <div class="ocr-fields-grid">
+                                            <div class="ocr-field-item">
+                                                <label>Extracted Serial</label>
+                                                <input type="text" id="ocr-serial-val" readonly placeholder="No OCR Run">
+                                            </div>
+                                            <div class="ocr-field-item">
+                                                <label>Manufacturer</label>
+                                                <input type="text" id="ocr-mfg-val" readonly placeholder="No OCR Run">
+                                            </div>
+                                            <div class="ocr-field-item">
+                                                <label>Gauge pressure</label>
+                                                <input type="text" id="ocr-pressure-val" readonly placeholder="No OCR Run">
+                                            </div>
+                                            <div class="ocr-field-item">
+                                                <label>expiry date</label>
+                                                <input type="text" id="ocr-expiry-val" readonly placeholder="No OCR Run">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="voice-observation-container">
+                                        <label style="font-size:0.75rem; font-weight:700; color:var(--text-main); display:block;">Speech-To-Text Voice Observations</label>
+                                        <div class="voice-input-control-row">
+                                            <input type="text" id="offline-voice-text" class="search-input" style="flex-grow:1; background:rgba(0,0,0,0.25);" placeholder="Speak/write notes here...">
+                                            <button class="btn btn-primary btn-sm" onclick="processVoiceObservations()">Process Note</button>
+                                        </div>
+                                        <div class="voice-suggestion-pills">
+                                            <span class="suggestion-pill" onclick="inputVoicePreset('Dial indicates low operating pressure at ninety PSI')">"Pressure is low at 90 PSI"</span>
+                                            <span class="suggestion-pill" onclick="inputVoicePreset('Safety lock pin is broken and plastic tamper seal is missing')">"Safety seal pin missing"</span>
+                                            <span class="suggestion-pill" onclick="inputVoicePreset('Significant rust deposits found on structural casing collar')">"Rust deposits detected"</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div style="display:flex; flex-direction:column; gap:24px;">
+                                
+                                <!-- Step 3: Diagnostics & Canvas -->
+                                <div class="glass-panel" style="margin-bottom:0; display:flex; flex-direction:column;">
+                                    <div class="offline-panel-header">
+                                        <div class="offline-panel-title">
+                                            <i data-lucide="cpu"></i>
+                                            Step 3: Local Edge AI Diagnostic Canvas
+                                        </div>
+                                        <button class="btn btn-primary btn-sm" id="ai-run-offline-btn" onclick="runOfflineDiagnostics()" disabled>Run Edge AI Diagnostics</button>
+                                    </div>
+
+                                    <!-- Canvas -->
+                                    <div class="ai-image-overlay-container" id="offline-overlay-container">
+                                        <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">
+                                            <i data-lucide="image" style="width: 36px; height: 36px; stroke-width: 1.5; margin-bottom: 8px;"></i>
+                                            <div>Edge AI Neural Bounding Box Workspace</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Certificate / decision placeholder -->
+                                    <div id="offline-cert-box" style="display:none; margin-top:14px;"></div>
+
+                                    <div style="margin-top:20px; display:flex; gap:12px; border-top:1px solid var(--border-color); padding-top:14px;">
+                                        <button class="btn btn-primary" id="save-offline-btn" onclick="saveOfflineInspection()" style="flex-grow:1;" disabled>
+                                            <i data-lucide="save" style="width:16px; display:inline-block; vertical-align:middle;"></i> Save Certificate Offline
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Local SQLite Cache -->
+                                <div class="glass-panel" style="margin-bottom:0;">
+                                    <div class="offline-panel-header">
+                                        <div class="offline-panel-title">
+                                            <i data-lucide="save"></i>
+                                            Local SQLite Device Database Cache
+                                        </div>
+                                        <button class="btn btn-secondary btn-sm" onclick="clearOfflineCache()" style="color:var(--color-fail); border-color:var(--color-fail-glow);">
+                                            Clear Cache
+                                        </button>
+                                    </div>
+                                    
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;" id="offline-queue-badge">
+                                        Pending Sync: 0
+                                    </div>
+
+                                    <div class="offline-sync-queue-list" id="offline-queue-rows">
+                                        <!-- Cached rows rendered here -->
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
                 <!-- TAB: SMART INSPECTION WORKFLOW -->
                 <div class="viewport-tab" id="tab-inspection">
                     <div class="inspection-grid">
@@ -449,12 +683,14 @@
                                 </div>
 
                                 <!-- Image Detection Visual Canvas Overlay Container -->
-                                <div class="ai-image-overlay-container" id="ai-photo-overlay-container">
+                                <div class="ai-image-overlay-container" id="ai-photo-overlay-container" onclick="triggerMainImageUpload()" style="cursor: pointer; border: 1px dashed var(--border-glow); display: flex; align-items: center; justify-content: center; transition: border-color 0.2s;">
                                     <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">
-                                        <i data-lucide="image" style="width: 36px; height: 36px; stroke-width: 1.5; margin-bottom: 8px;"></i>
-                                        <div>AI Computer Vision Bounding Box Canvas</div>
+                                        <i data-lucide="upload-cloud" style="width: 36px; height: 36px; stroke-width: 1.5; margin-bottom: 8px; color: var(--primary);"></i>
+                                        <div style="font-weight: 600; color: var(--text-main);">Click canvas to upload custom safety image</div>
+                                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">or select preset checkpoints below</div>
                                     </div>
                                 </div>
+                                <input type="file" id="main-image-file-input" style="display:none;" onchange="handleMainImageUpload(this)">
 
                                 <div class="photo-upload-container">
                                     <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">SELECT INSPECTION PHOTOS FOR ANALYSIS</label>
@@ -537,6 +773,213 @@
                             </div>
                         </div>
 
+                    </div>
+                </div>
+
+                <!-- TAB: OFFLINE SCANNING & CERTIFICATION -->
+                <div class="viewport-tab" id="tab-offline-scanning">
+                    <div class="offline-workspace">
+                        <!-- Network status sync bar -->
+                        <div class="sync-status-bar">
+                            <div class="sync-network-info">
+                                <div id="offline-network-indicator" class="sync-state-indicator">
+                                    <div id="network-pulse-dot" class="pulse-dot-amber"></div>
+                                    <span id="network-status-text">OFFLINE STATE (Local Cache)</span>
+                                </div>
+                                <button id="offline-toggle-btn" class="btn btn-secondary btn-sm" onclick="toggleOfflineMode()">Go Online</button>
+                            </div>
+                            <div class="sync-actions-panel">
+                                <div class="sync-progress-container">
+                                    <span>Cloud Sync Progress: <strong id="sync-percent-text" style="display:none;">0%</strong></span>
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" id="sync-prog-fill" style="width:0%;"></div>
+                                    </div>
+                                </div>
+                                <button id="sync-now-btn" class="btn btn-primary btn-sm" onclick="runCloudSynchronization()" disabled>Sync Now</button>
+                            </div>
+                        </div>
+
+                        <div class="offline-steps-grid">
+                            <!-- Left Column: Search, Scan, Upload -->
+                            <div class="left-offline-column">
+                                <div class="glass-panel">
+                                    <div class="offline-panel-header">
+                                        <span class="offline-panel-title">
+                                            <i data-lucide="search"></i>
+                                            1. Offline Asset Lookup & Scan
+                                        </span>
+                                        <button class="btn btn-secondary btn-sm" onclick="simulateOfflineQrScan()">
+                                            <i data-lucide="qr-code"></i> Barcode Scan
+                                        </button>
+                                    </div>
+                                    <div class="asset-lookup-search-container">
+                                        <div class="offline-asset-input-wrap">
+                                            <i data-lucide="search" style="margin: 8px 0 0 10px; color: var(--text-muted); width: 16px;"></i>
+                                            <input type="text" id="offline-asset-search" placeholder="Search offline asset database...">
+                                        </div>
+                                    </div>
+                                    <div class="offline-asset-results-list" id="offline-asset-list">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+                                </div>
+
+                                <div class="glass-panel">
+                                    <div class="offline-panel-header">
+                                        <span class="offline-panel-title">
+                                            <i data-lucide="box"></i>
+                                            2. Asset Target Details & Photos
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="report-meta-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                                        <div class="meta-field">
+                                            <label>Asset ID</label>
+                                            <span id="offline-asset-id-display" style="font-weight: 600;">None</span>
+                                        </div>
+                                        <div class="meta-field">
+                                            <label>Equipment Name</label>
+                                            <span id="offline-asset-name-display" style="font-weight: 600;">None</span>
+                                        </div>
+                                        <div class="meta-field" style="grid-column: span 2;">
+                                            <label>Facility Site</label>
+                                            <span id="offline-asset-site-display" style="font-weight: 600;">None</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="custom-photo-uploader" style="margin-bottom: 20px;">
+                                        <label class="file-input-btn" for="offline-image-file-input">
+                                            <i data-lucide="upload-cloud"></i>
+                                            <span>Upload Custom Inspection Image</span>
+                                        </label>
+                                        <input type="file" id="offline-image-file-input" style="display:none;" onchange="handleOfflineImageUpload(this)">
+                                    </div>
+
+                                    <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">Checkpoint Photos for Diagnostics</label>
+                                    <div class="photo-cards-grid" style="margin-top: 10px;">
+                                        <div class="photo-card photo-card-offline" id="offline-photo-gauge" onclick="toggleOfflinePhoto('gauge')">
+                                            <div style="width:100%; height:80px; background:#1b2438; display:flex; align-items:center; justify-content:center; position:relative;">
+                                                <svg viewBox="0 0 100 100" style="width: 50px; height: 50px; stroke: var(--color-fail); fill: none; stroke-width: 5;">
+                                                    <circle cx="50" cy="50" r="40"/>
+                                                    <path d="M20 50 A30 30 0 0 1 80 50" stroke="#94a3b8" stroke-dasharray="3, 3" />
+                                                    <line x1="50" y1="50" x2="20" y2="35" stroke-width="6" stroke-linecap="round"/>
+                                                    <circle cx="50" cy="50" r="5" fill="#f8fafc"/>
+                                                </svg>
+                                            </div>
+                                            <div class="photo-label">Pressure Gauge</div>
+                                            <div class="selected-checkmark"><i data-lucide="check"></i></div>
+                                        </div>
+                                        <div class="photo-card photo-card-offline" id="offline-photo-corrosion" onclick="toggleOfflinePhoto('corrosion')">
+                                            <div style="width:100%; height:80px; background:#1b2438; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                                                <svg viewBox="0 0 100 100" style="width: 50px; height: 50px; stroke: #b45309; fill: none; stroke-width: 4;">
+                                                    <rect x="40" y="10" width="20" height="60" rx="3"/>
+                                                    <path d="M30 40 Q40 50 30 60" />
+                                                    <circle cx="48" cy="28" r="7" fill="#b45309" fill-opacity="0.7" stroke="none" />
+                                                    <circle cx="53" cy="38" r="9" fill="#b45309" fill-opacity="0.8" stroke="none" />
+                                                </svg>
+                                            </div>
+                                            <div class="photo-label">Extinguisher Neck</div>
+                                            <div class="selected-checkmark"><i data-lucide="check"></i></div>
+                                        </div>
+                                        <div class="photo-card photo-card-offline" id="offline-photo-seal" onclick="toggleOfflinePhoto('seal')">
+                                            <div style="width:100%; height:80px; background:#1b2438; display:flex; align-items:center; justify-content:center; position:relative;">
+                                                <svg viewBox="0 0 100 100" style="width: 50px; height: 50px; stroke: var(--text-muted); fill: none; stroke-width: 4;">
+                                                    <circle cx="50" cy="40" r="14" stroke-dasharray="4, 4"/>
+                                                    <line x1="50" y1="54" x2="50" y2="80" stroke-dasharray="4, 4"/>
+                                                    <path d="M35 70 L65 70" stroke="var(--color-fail)" stroke-width="6" />
+                                                </svg>
+                                            </div>
+                                            <div class="photo-label">Tamper Seal & Pin</div>
+                                            <div class="selected-checkmark"><i data-lucide="check"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Diagnostics Workspace & Sync Queue -->
+                            <div class="right-offline-column">
+                                <div class="glass-panel">
+                                    <div class="offline-panel-header">
+                                        <span class="offline-panel-title">
+                                            <i data-lucide="cpu"></i>
+                                            3. Edge AI Vision Workspace
+                                        </span>
+                                    </div>
+
+                                    <div class="ai-image-overlay-container" id="offline-overlay-container" style="margin-bottom: 16px;">
+                                        <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">
+                                            <i data-lucide="image" style="width: 36px; height: 36px; stroke-width: 1.5; margin-bottom: 8px;"></i>
+                                            <div>Edge AI Bounding Box Canvas Workspace</div>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; gap: 12px;">
+                                        <button class="btn btn-secondary btn-sm" id="ocr-run-btn" onclick="runOcrExtraction()" disabled style="flex-grow: 1;">
+                                            <i data-lucide="file-text"></i> Run OCR Extraction
+                                        </button>
+                                        <button class="btn btn-primary btn-sm" id="ai-run-offline-btn" onclick="runOfflineDiagnostics()" disabled style="flex-grow: 1;">
+                                            <i data-lucide="zap"></i> Run Edge AI Diagnostics
+                                        </button>
+                                    </div>
+
+                                    <div class="ocr-simulation-box">
+                                        <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">EXTRACTED OCR METADATA</span>
+                                        <div class="ocr-fields-grid">
+                                            <div class="ocr-field-item">
+                                                <label>Serial ID</label>
+                                                <input type="text" id="ocr-serial-val" readonly>
+                                            </div>
+                                            <div class="ocr-field-item">
+                                                <label>Manufacturer</label>
+                                                <input type="text" id="ocr-mfg-val" readonly>
+                                            </div>
+                                            <div class="ocr-field-item">
+                                                <label>Pressure Status</label>
+                                                <input type="text" id="ocr-pressure-val" readonly>
+                                            </div>
+                                            <div class="ocr-field-item">
+                                                <label>Expiry Date</label>
+                                                <input type="text" id="ocr-expiry-val" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="voice-observation-container">
+                                        <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">4. SPEECH-TO-TEXT FIELD (OFFLINE AI MODEL)</span>
+                                        <textarea class="search-input" id="offline-voice-text" placeholder="Transcribe voice observation comments here..." style="width:100%; height:60px; padding:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.85rem; resize:none; outline:none; margin-bottom:10px;"></textarea>
+                                        <button class="btn btn-secondary btn-sm" onclick="processVoiceObservations()" style="width:100%;">
+                                            <i data-lucide="mic"></i> Parse Remarks & Tokens
+                                        </button>
+                                        <div class="voice-suggestion-pills">
+                                            <div class="suggestion-pill" onclick="inputVoicePreset('Low gauge pressure detected')">"Low pressure"</div>
+                                            <div class="suggestion-pill" onclick="inputVoicePreset('Tamper seal broken or safety pin missing')">"Tamper seal broken"</div>
+                                            <div class="suggestion-pill" onclick="inputVoicePreset('Surface rust and corrosion on cylinder')">"Surface rust"</div>
+                                        </div>
+                                    </div>
+
+                                    <div id="offline-cert-box" style="display:none; margin-top: 16px;"></div>
+
+                                    <button class="btn btn-primary" id="save-offline-btn" onclick="saveOfflineInspection()" disabled style="width: 100%; margin-top: 16px;">
+                                        <i data-lucide="save"></i> Save Inspection to Local SQLite Queue
+                                    </button>
+                                </div>
+
+                                <div class="glass-panel">
+                                    <div class="offline-panel-header">
+                                        <span class="offline-panel-title">
+                                            <i data-lucide="database"></i>
+                                            5. Offline Sync Queue (SQLite Cache)
+                                        </span>
+                                        <span id="offline-queue-badge" class="badge-passed">Pending Sync: 0</span>
+                                    </div>
+                                    <div class="offline-sync-queue-list" id="offline-queue-rows">
+                                        <!-- SQLite Queue list -->
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" onclick="clearOfflineCache()" style="width: 100%; margin-top: 12px; border-color: rgba(239,68,68,0.2); color: var(--color-fail);">
+                                        <i data-lucide="trash-2"></i> Clear Cached SQLite Queue
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1175,5 +1618,6 @@
 
     <!-- Core Javascript Code -->
     <script src="app.js"></script>
+    <script src="offline_scanning.js"></script>
 </body>
 </html>
